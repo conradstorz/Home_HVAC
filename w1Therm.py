@@ -63,6 +63,8 @@ def retrieve_json(sensor_file):
         # TODO log this error: print(f"Error with JSON file: {error}")
         data = {}
     # print(f'\n\nJSON data retreived:\n{data}\n')
+    # TODO read sensor_update_file.JSON for device IDs and location names. Check for changes and update sensor_file.JSON
+    # sensor_update can be modified by the user to re-locate sensor locations or define initial locations.
     return data
 
 
@@ -78,26 +80,31 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
         for key, value in new_reading.items():
             current_device_temperature_reading = new_reading["temperature"]
             # TODO log beginning of device value comparrison 
-            if key in old_reading:
-                if key == "most recent date accessed":
-                    old_reading[key] = new_reading["most recent date accessed"]
-                    old_reading["temperature"] = current_device_temperature_reading
-                if key == "accuracy value" and old_reading[key] != value:
-                    # TODO log change in precision
+            if current_device_temperature_reading != None:
+                if key in old_reading:
+                    if key == "most recent date accessed":
+                        if new_reading["most recent date accessed"] != None:
+                            old_reading[key] = new_reading["most recent date accessed"]
+                            old_reading["temperature"] = current_device_temperature_reading
+                    if key == "accuracy value" and old_reading[key] != value:
+                        # TODO log change in precision
+                        old_reading[key] = value
+                    if key == "highest value":
+                        if (old_reading[key] == None) or (old_reading[key] < current_device_temperature_reading):
+                            # TODO log change in highest value
+                            old_reading[key] = current_device_temperature_reading
+                            old_reading["highest date"] = new_reading["highest date"]
+                    if key == "lowest value":
+                        if (old_reading[key] == None) or (old_reading[key] > current_device_temperature_reading):
+                            # TODO log change in lowest value
+                            old_reading[key] = current_device_temperature_reading
+                            old_reading["lowest date"] = new_reading["lowest date"]
+                else:
+                    # TODO log addition of new monitoring value
                     old_reading[key] = value
-                if key == "highest value":
-                    if (old_reading[key] == None) or (old_reading[key] < current_device_temperature_reading):
-                        # TODO log change in highest value
-                        old_reading[key] = current_device_temperature_reading
-                        old_reading["highest date"] = new_reading["highest date"]
-                if key == "lowest value":
-                    if (old_reading[key] == None) or (old_reading[key] > current_device_temperature_reading):
-                        # TODO log change in lowest value
-                        old_reading[key] = current_device_temperature_reading
-                        old_reading["lowest date"] = new_reading["lowest date"]
             else:
-                # TODO log addition of new monitoring value
-                old_reading[key] = value
+                # TODO log error that device did not contain valid info
+                pass
         # TODO log completion of updating individual device values.
         return old_reading
 

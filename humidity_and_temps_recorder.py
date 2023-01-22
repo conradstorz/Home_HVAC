@@ -70,6 +70,7 @@ def write_csv(device_data, directory="."):
 @logger.catch
 def main_data_gathering_loop():
     time_delay = 0
+    sensors_reporting = read_temperatures()
     print(sensors_reporting)
     while True:
         # TODO Compress_CSV_files() # CSV files need to be compressed periodically

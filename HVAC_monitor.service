@@ -3,11 +3,16 @@ Description=3023 Old Hill Rd HVAC temperatures monitor
 After=network-online.target
 
 [Service] 
-ExecStart=/usr/bin/python3 -u humidity_and_temps.py
+ExecStart=/usr/bin/python3 -u humidity_and_temps_recorder.py
 WorkingDirectory=/home/breakout
 StandardOutput=inherit
 StandardError=inherit
-Restart=always
+Restart=on-failure
+StartLimitBurst=2
+# Restart, but not more than once every 10 minutes
+#StartLimitInterval=600
+# Restart, but not more than once every 30s (for testing purposes)
+StartLimitInterval=30
 User=breakout
 
 [Install]
