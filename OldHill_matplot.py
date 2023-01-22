@@ -8,7 +8,10 @@ from loguru import logger
 def main():
     readings_by_location = {}
     # Open the CSV file and read the contents
-    with open('20230117_HVAC_temps.csv', 'r') as f:
+    with open('20230120_HVAC_temps.csv', 'r') as f:
+        # TODO make compat with zipped csv 
+        # TODO make interactive to choose from several
+        # TODO make to choose most recent from directory automatically
         reader = csv.DictReader(f)
         # Iterate through the rows of the CSV file
         for row in reader:
@@ -20,7 +23,7 @@ def main():
             else:
                 readings_by_location[r] = [v]
 
-    print(f'READINGS BY LOCATION DICT:\n{readings_by_location}')
+    # print(f'READINGS BY LOCATION DICT:\n{readings_by_location}')
 
     # Open the output CSV file and write the results
     out_csv = 'temperature_Report.csv'

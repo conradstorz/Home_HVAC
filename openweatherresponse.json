@@ -1,0 +1,44 @@
+{
+  "coord": {
+    "lon": 85.8682,
+    "lat": 38.3171
+  },
+  "weather": [
+    {
+      "id": 800,
+      "main": "Clear",
+      "description": "clear sky",
+      "icon": "01n"
+    }
+  ],
+  "base": "stations",
+  "main": {
+    "temp": 261.13,
+    "feels_like": 256.5,
+    "temp_min": 261.13,
+    "temp_max": 261.13,
+    "pressure": 1042,
+    "humidity": 75,
+    "sea_level": 1042,
+    "grnd_level": 895
+  },
+  "visibility": 10000,
+  "wind": {
+    "speed": 2.11,
+    "deg": 166,
+    "gust": 2.05
+  },
+  "clouds": {
+    "all": 0
+  },
+  "dt": 1674049324,
+  "sys": {
+    "country": "CN",
+    "sunrise": 1674005467,
+    "sunset": 1674040916
+  },
+  "timezone": 28800,
+  "id": 1280240,
+  "name": "Qinggilik",
+  "cod": 200
+}

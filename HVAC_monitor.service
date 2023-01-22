@@ -1,0 +1,14 @@
+[Unit]
+Description=3023 Old Hill Rd HVAC temperatures monitor
+After=network-online.target
+
+[Service] 
+ExecStart=/usr/bin/python3 -u humidity_and_temps.py
+WorkingDirectory=/home/breakout
+StandardOutput=inherit
+StandardError=inherit
+Restart=always
+User=breakout
+
+[Install]
+WantedBy=multi-user.target
