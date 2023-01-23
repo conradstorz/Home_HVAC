@@ -1,48 +1,20 @@
+"""A self contained and systemd service package for monitoring temperatures"""
+__version__ = "0.1"
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from w1Therm import read_temperatures
 from dht11_test import get_humidity
+from LCD_statusd import start_LCD_daemon
+from weather_underground import get_temp_and_humidity
 from loguru import logger
 from datetime import datetime
 import time
 import csv
-import os.path
 from os import path
 
-""" TODO get outside temperature and humidity from open weather map and place into csv database with each reading of sensors.
-TODO note that once per 12 minutes is probably frequent enough to check temps and humidity
-Thank you for subscribing to Free OpenWeatherMap!
+ZIPCODE = '47119'
 
-API key:
-- Your API key is 5a51770d8fa87227c5c1a07f3f9240fd
-- Within the next couple of hours, it will be activated and ready to use
-- You can later create more API keys on your account page
-- Please, always use your API key in each API call
-
-Endpoint:
-- Please, use the endpoint api.openweathermap.org for your API calls
-- Example of API call:
-api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=5a51770d8fa87227c5c1a07f3f9240fd
-
-lat = '38.317139'
-lon = '-85.868167'
-API = '5a51770d8fa87227c5c1a07f3f9240fd'
-url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API}"
-
-Useful links:
-- API documentation https://openweathermap.org/api
-- Details of your plan https://openweathermap.org/price
-- Please, note that 16-days daily forecast and History API are not available for Free subscribers
-"""
-
-
-"""
-from subprocess import check_output
-lcd.message('Local IP Address:\n')
-lcd.message(ips2 = check_output(['hostname', '--all-ip-addresses']).decode('utf-8'))
-
-"""
 @logger.catch
 def write_csv(device_data, directory="."):
     # Open the output CSV file and write 'the results
@@ -77,7 +49,10 @@ def main_data_gathering_loop():
         sensors_reporting = read_temperatures()
         write_csv(sensors_reporting['all records'])
         if time_delay >= 14:
+            time_delay = 0
             # send_to_thingspeak(latest readings)
+            # get current temp and humidity
+            t, h = get_temp_and_humidity(ZIPCODE)
             pass
         print("Sleeping 1 second...")
         time_delay =+ 1
@@ -93,4 +68,5 @@ for sensor, value in sensors_reporting['all records'].items():
     print(f'sensor: {sensor}\nvalue: {value}')
     print(f'Device# {sensor} temperature is: {value["temperature"]}')
 print(f'Humidity is: {get_humidity()}')
+start_LCD_daemon()
 main_data_gathering_loop()
