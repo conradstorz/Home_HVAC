@@ -15,14 +15,15 @@ active_devices = 0
 """
 import time
 import board
+from subprocess import check_output
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 
 # Modify this if you have a different sized Character LCD
 LCD_COLUMNS = 16
 LCD_ROWS = 2
 RED_BACKLIGHT = [100, 0, 0]
-BLUE_BACKLIGHT = [0, 100, 0]
-GREEN_BACKLIGHT = [0, 0, 100]
+BLUE_BACKLIGHT = [0, 0, 100]
+GREEN_BACKLIGHT = [0, 100, 0]
 PURPLE_BACKLIGHT = [50, 0, 50]
 BACKLIGHT_OFF = [0, 0, 0]
 WELCOME_MESSAGE = "Hello\nCircuitPython"
@@ -43,5 +44,13 @@ def start_LCD_daemon():
     # Print two line message
     lcd.message = WELCOME_MESSAGE
     time.sleep(.1)
+    lcd.clear()
     lcd.message = "IP Address\nUNKNOWN"
+    ips2 = check_output(['hostname', '--all-ip-addresses']).decode('utf-8')
+    # TODO check that IP address is valid
+    lcd.clear()
+    # Set LCD color to red
+    lcd.color = GREEN_BACKLIGHT
+    # Print two line message
+    lcd.message = f"IP Address\n{ips2}"    
     return
