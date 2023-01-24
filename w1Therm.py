@@ -34,7 +34,7 @@ def build_sensor_dict(sensors_list):
     for sensor in sensors_list:
         try:
             current_reading = sensor.get_temperature()
-        except errors.SensorNotReadyError as error:
+        except (errors.SensorNotReadyError, errors.ResetValueError) as error:
             # TODO log error
             current_reading = None
         results[sensor.id] = EXAMPLE.copy()
