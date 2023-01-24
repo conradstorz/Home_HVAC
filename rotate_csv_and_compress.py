@@ -28,10 +28,9 @@ def zip_files(filePath, remove_uncompressed_file=False):
 directory = "./"
 # Search for CSV files in the directory
 for file_path in Path(directory).glob("*.csv"):
-    # TODO sort out active files (e.g. todays file) and only compress older files
+    # TODO sort out active files (e.g. yesterday and todays file) and only compress older files
     zip_files(file_path)
-    # TODO verify file was placed inside of a zip file and delete original
-    # should likely be part of the zip_files function
+
 
 """
 from pathlib import Path
@@ -39,6 +38,7 @@ from datetime import datetime, date
 
 def get_files_before_today(directory):
     today = date.today()
+    yesterday = today - 1
     files_before_today = []
     for file_path in Path(directory).rglob('*'):
         if file_path.is_file():
