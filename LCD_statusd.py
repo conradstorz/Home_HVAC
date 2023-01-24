@@ -46,8 +46,9 @@ def start_LCD_daemon():
     time.sleep(.1)
     lcd.clear()
     lcd.message = "IP Address\nUNKNOWN"
-    ips2 = check_output(['hostname', '--all-ip-addresses']).decode('utf-8')
+    ips2 = check_output(['hostname', '--all-ip-addresses']).decode('utf-8').split()
     # TODO check that IP address is valid
+    print(f'IP address lookup: {ips2}')
     lcd.clear()
     # Set LCD color to red
     lcd.color = GREEN_BACKLIGHT

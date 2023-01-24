@@ -8,7 +8,7 @@ from loguru import logger
 def main():
     readings_by_location = {}
     # Open the CSV file and read the contents
-    with open('20230122_HVAC_temps.csv', 'r') as f:
+    with open('20230124_HVAC_temps.csv', 'r') as f:
         # TODO make compat with zipped csv 
         # TODO make interactive to choose from several
         # TODO make to choose most recent from directory automatically
