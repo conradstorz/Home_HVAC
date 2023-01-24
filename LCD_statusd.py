@@ -52,5 +52,10 @@ def start_LCD_daemon():
     # Set LCD color to red
     lcd.color = GREEN_BACKLIGHT
     # Print two line message
-    lcd.message = f"IP Address\n{ips2}"    
+    ip1 = ips2[0]
+    if len(ips2) > 1:
+        ip2 = ips2[1]
+    else:
+        ip2 = 'n/a'
+    lcd.message = f"IP1:{ip1}\nIP2:{ip2}"      
     return
