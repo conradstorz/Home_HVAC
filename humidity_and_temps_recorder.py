@@ -58,15 +58,18 @@ def main_data_gathering_loop():
         time_delay =+ 1
         time.sleep(1)
 
+def main():
+    # TODO make a seperate script webserver that displays all details and offers ability to rename sensors
+    # TODO find a way to make IP address discoverable without attaching a monitor to the pi
+    # TODO maybe use a common name that can be typed into a web browser on the same intranet
+    sensors_reporting = read_temperatures()
+    print(f'sensors reporting:\n{sensors_reporting}')
+    for sensor, value in sensors_reporting['all records'].items():
+        print(f'sensor: {sensor}\nvalue: {value}')
+        print(f'Device# {sensor} temperature is: {value["temperature"]}')
+    print(f'Humidity is: {get_humidity()}')
+    start_LCD_daemon()
+    main_data_gathering_loop()
 
-# TODO make a seperate script webserver that displays all details and offers ability to rename sensors
-# TODO find a way to make IP address discoverable without attaching a monitor to the pi
-# TODO maybe use a common name that can be typed into a web browser on the same intranet
-sensors_reporting = read_temperatures()
-print(f'sensors reporting:\n{sensors_reporting}')
-for sensor, value in sensors_reporting['all records'].items():
-    print(f'sensor: {sensor}\nvalue: {value}')
-    print(f'Device# {sensor} temperature is: {value["temperature"]}')
-print(f'Humidity is: {get_humidity()}')
-start_LCD_daemon()
-main_data_gathering_loop()
+if __name__ == '__main__':
+    main()
