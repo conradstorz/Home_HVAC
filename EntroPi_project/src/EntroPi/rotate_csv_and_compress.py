@@ -1,7 +1,9 @@
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
+from loguru import logger
 
 
+@logger.catch
 def zip_files(filePath, remove_uncompressed_file=False):
     # Initialize the ZIP file
     # TODO verify file exists and is non-zero sized
@@ -25,11 +27,17 @@ def zip_files(filePath, remove_uncompressed_file=False):
     return
 
 
-directory = "./"
-# Search for CSV files in the directory
-for file_path in Path(directory).glob("*.csv"):
-    # TODO sort out active files (e.g. yesterday and todays file) and only compress older files
-    zip_files(file_path)
+@logger.catch
+def main():
+    directory = "./"
+    # Search for CSV files in the directory
+    for file_path in Path(directory).glob("*.csv"):
+        # TODO sort out active files (e.g. yesterday and todays file) and only compress older files
+        zip_files(file_path)
+
+
+if __name__ == "__main__":
+    main()
 
 
 """

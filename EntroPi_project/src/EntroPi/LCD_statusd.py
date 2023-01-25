@@ -17,6 +17,7 @@ import time
 import board
 from subprocess import check_output
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
+from loguru import logger
 
 # Modify this if you have a different sized Character LCD
 LCD_COLUMNS = 16
@@ -36,6 +37,7 @@ i2c = board.I2C()  # uses board.SCL and board.SDA
 lcd = character_lcd.Character_LCD_RGB_I2C(i2c, LCD_COLUMNS, LCD_ROWS)
 
 
+@logger.catch
 def start_LCD_daemon():
     """Primary function"""
     lcd.clear()
@@ -43,12 +45,12 @@ def start_LCD_daemon():
     lcd.color = RED_BACKLIGHT
     # Print two line message
     lcd.message = WELCOME_MESSAGE
-    time.sleep(.1)
+    time.sleep(0.1)
     lcd.clear()
     lcd.message = "IP Address\nUNKNOWN"
-    ips2 = check_output(['hostname', '--all-ip-addresses']).decode('utf-8').split()
+    ips2 = check_output(["hostname", "--all-ip-addresses"]).decode("utf-8").split()
     # TODO check that IP address is valid
-    print(f'IP address lookup: {ips2}')
+    print(f"IP address lookup: {ips2}")
     lcd.clear()
     # Set LCD color to red
     lcd.color = GREEN_BACKLIGHT
@@ -57,6 +59,6 @@ def start_LCD_daemon():
     if len(ips2) > 1:
         ip2 = ips2[1]
     else:
-        ip2 = 'n/a'
-    lcd.message = f"IP1:{ip1}\nIP2:{ip2}"      
+        ip2 = "n/a"
+    lcd.message = f"IP1:{ip1}\nIP2:{ip2}"
     return

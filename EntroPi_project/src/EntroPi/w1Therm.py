@@ -5,6 +5,7 @@ from w1thermsensor import W1ThermSensor, Unit, errors
 from datetime import datetime
 import json
 from json.decoder import JSONDecodeError
+from loguru import logger
 
 SENSOR_JSON_FILE = "w1devices.json"
 TIME_NOW = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
@@ -23,9 +24,12 @@ EXAMPLE_DICT = {
     }
 }
 
+
 def time_now():
     return datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
 
+
+@logger.catch
 def build_sensor_dict(sensors_list):
     """Return a dict of available sensors formatted per example dict.
     TODO determine if precision can be read or can only be set."""
@@ -44,6 +48,7 @@ def build_sensor_dict(sensors_list):
     return results
 
 
+@logger.catch
 def retrieve_json(sensor_file):
     """JSON file is a key/value file of device IDs of previously found devices.
     key = Hex Address of device
@@ -62,40 +67,47 @@ def retrieve_json(sensor_file):
     except (FileNotFoundError, JSONDecodeError) as error:
         # TODO log this error: print(f"Error with JSON file: {error}")
         data = {}
-    # print(f'\n\nJSON data retreived:\n{data}\n')
     # TODO read sensor_update_file.JSON for device IDs and location names. Check for changes and update sensor_file.JSON
     # sensor_update can be modified by the user to re-locate sensor locations or define initial locations.
     return data
 
 
+@logger.catch
 def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
     """Old readings is a dict of device IDs with an associated dict of observed values from device.
     Likewise, New readings is a dict of devie IDs and their associated values dicts.
     New devices will be added to the old. Pre-existing records will be updated."""
-    
+
+    @logger.catch
     def compare_devices(old_reading, new_reading):
         """Compare a single device's record dict to it's old record and update as needed.
         This function does not know what the device ID is. It is only working with the
         dict of values associated with a device."""
         for key, value in new_reading.items():
             current_device_temperature_reading = new_reading["temperature"]
-            # TODO log beginning of device value comparrison 
+            # TODO log beginning of device value comparrison
             if current_device_temperature_reading != None:
                 if key in old_reading:
                     if key == "most recent date accessed":
                         if new_reading["most recent date accessed"] != None:
                             old_reading[key] = new_reading["most recent date accessed"]
-                            old_reading["temperature"] = current_device_temperature_reading
+                            old_reading[
+                                "temperature"
+                            ] = current_device_temperature_reading
                     if key == "accuracy value" and old_reading[key] != value:
                         # TODO log change in precision
                         old_reading[key] = value
                     if key == "highest value":
-                        if (old_reading[key] == None) or (old_reading[key] < current_device_temperature_reading):
+                        if (old_reading[key] == None) or (
+                            old_reading[key] < current_device_temperature_reading
+                        ):
                             # TODO log change in highest value
                             old_reading[key] = current_device_temperature_reading
                             old_reading["highest date"] = new_reading["highest date"]
                     if key == "lowest value":
-                        if (old_reading[key] == None) or (old_reading[key] > current_device_temperature_reading):
+                        if (old_reading[key] == None) or (
+                            old_reading[key] > current_device_temperature_reading
+                        ):
                             # TODO log change in lowest value
                             old_reading[key] = current_device_temperature_reading
                             old_reading["lowest date"] = new_reading["lowest date"]
@@ -113,14 +125,17 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
         # TODO log beginning of updating of device
         if key not in old_readings_from_devices:
             # TODO log discovery of new device
-            old_readings_from_devices[key] = value # add missing or new device
+            old_readings_from_devices[key] = value  # add missing or new device
         else:
             # this device has a previous record and it needs to be updated.
-            old_readings_from_devices[key] = compare_devices(old_readings_from_devices[key], value)
+            old_readings_from_devices[key] = compare_devices(
+                old_readings_from_devices[key], value
+            )
     # TODO log completion of updating devices record
     return old_readings_from_devices
 
 
+@logger.catch
 def write_json(file, sensor_data_dict):
     """Accept a dictionary that describe sensors and
     write out to the specified JSON file."""
@@ -130,6 +145,8 @@ def write_json(file, sensor_data_dict):
         json.dump(sensor_data_dict, outfile)
     return
 
+
+@logger.catch
 def read_temperatures():
     # TODO log start of program
 
@@ -145,7 +162,7 @@ def read_temperatures():
     # default the output to JSON records
     combined_data = existing_device_records.copy()
     available_sensors = []
-    if sensor != None:    
+    if sensor != None:
         available_sensors = sensor.get_available_sensors()
         # print(f"Available sensors are: {available_sensors}")
 
@@ -161,22 +178,23 @@ def read_temperatures():
         # print(f"Active sensors dict is:\n{active_sensor_data_dict}")
 
         # update readings and add missing devices
-        combined_data = update_minmax_records(existing_device_records, active_sensor_data_dict)
+        combined_data = update_minmax_records(
+            existing_device_records, active_sensor_data_dict
+        )
         # print(f"JSON ready dict: \n{combined_data}")
 
         write_json(SENSOR_JSON_FILE, combined_data)
 
     # TODO log program exit
-    return {'all records': combined_data, 'responding': available_sensors} 
+    return {"all records": combined_data, "responding": available_sensors}
 
 
+@logger.catch
 def main():
     all, responding = read_temperatures().items()
     print(all)
-    print(f'\n\nOnly devices responding:\n{responding}')
-    
+    print(f"\n\nOnly devices responding:\n{responding}")
 
 
-
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

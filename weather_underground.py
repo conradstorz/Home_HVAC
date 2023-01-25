@@ -23,7 +23,9 @@ Useful links:
 - Details of your plan https://openweathermap.org/price
 - Please, note that 16-days daily forecast and History API are not available for Free subscribers
 """
+from loguru import logger
 
+@logger.catch
 def get_temp_and_humidity():
     """Contact weather underground and return a tuple of temperature for given zipcode and humidity."""
     temp = 0
