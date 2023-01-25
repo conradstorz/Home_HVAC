@@ -2,8 +2,8 @@ from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 from loguru import logger
 from datetime import datetime
+from CONSTANTS import *
 
-BASENAME_CSV_FILE = '_HVAC_temps'
 
 def generate_csv_filename(basename = None):
     if basename == None:

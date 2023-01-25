@@ -1,4 +1,7 @@
-""" TODO get outside temperature and humidity from open weather map and place into csv database with each reading of sensors.
+"""Functions for retrieving weather conditions for area where this monitor is located."""
+
+"""
+TODO get outside temperature and humidity from open weather map and place into csv database with each reading of sensors.
 TODO note that once per 12 minutes is probably frequent enough to check temps and humidity
 Thank you for subscribing to Free OpenWeatherMap!
 

@@ -6,53 +6,11 @@ __version__ = "0.1"
 from w1Therm import read_temperatures
 from dht11_test import get_humidity
 from LCD_statusd import start_LCD_daemon
-from weather_underground import get_temp_and_humidity
+from open_weather_map import get_temp_and_humidity
 from rotate_csv_and_compress import compress_local_csv
 from loguru import logger
-from datetime import datetime
 import time
-import csv
-from os import path
-
-ZIPCODE = "47119"
-BASENAME_CSV_FILE = '_HVAC_temps'
-
-def generate_csv_filename(basename = None):
-    if basename == None:
-        basename = BASENAME_CSV_FILE
-    return f'{datetime.now().strftime("%Y%m%d")}{basename}.csv'
-
-@logger.catch
-def write_csv(device_data, directory="."):
-    # Open the output CSV file and write 'the results
-    print(f"\ndevice_data:\n{device_data}\n")
-    if device_data != None:
-        if device_data != {}:
-            first_key = list(device_data)[0]
-            # print(f'first key: {first_key}')
-            first_device_values = device_data[first_key]
-            fieldnames = first_device_values.keys()  # retrieve keys from nested dictionaries
-            print(f"\nfilednames:\n{fieldnames}\n")
-            out_csv = generate_csv_filename()
-            # check if file exists and write headers if new file
-            if not path.exists(out_csv):
-                with open(out_csv, "w", newline="") as h:
-                    writer = csv.DictWriter(h, fieldnames=fieldnames)
-                    writer.writeheader()
-            else:
-                with open(out_csv, "a", newline="") as h:
-                    writer = csv.DictWriter(h, fieldnames=fieldnames)
-                    # Write a row for each location
-                    for device, values in device_data.items():
-                        writer.writerow(values)
-            print(f"Output file saved as {out_csv}.")
-        else:
-            # TODO log error
-            print('Empty dict unexpected.')
-    else:
-        # TODO log error
-        print('No data to add to CSV file.')
-    return
+from csv_functions import write_csv
 
 
 @logger.catch

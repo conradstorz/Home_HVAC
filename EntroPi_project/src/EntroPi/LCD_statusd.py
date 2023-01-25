@@ -15,10 +15,12 @@ active_devices = 0
 """
 import time
 import board
+from CONSTANTS import *
 from subprocess import check_output
 import adafruit_character_lcd.character_lcd_rgb_i2c as character_lcd
 from loguru import logger
 
+# These values are specific to the hardware attached so are not included in the CONSTANTS file
 # Modify this if you have a different sized Character LCD
 LCD_COLUMNS = 16
 LCD_ROWS = 2
@@ -27,8 +29,7 @@ BLUE_BACKLIGHT = [0, 0, 100]
 GREEN_BACKLIGHT = [0, 100, 0]
 PURPLE_BACKLIGHT = [50, 0, 50]
 BACKLIGHT_OFF = [0, 0, 0]
-WELCOME_MESSAGE = "Hello\nCircuitPython"
-EXIT_MESSAGE = "Going to sleep\nCya later!"
+
 
 # Initialise I2C bus.
 i2c = board.I2C()  # uses board.SCL and board.SDA
