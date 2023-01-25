@@ -8,6 +8,7 @@ from json.decoder import JSONDecodeError
 from loguru import logger
 
 SENSOR_JSON_FILE = "w1devices.json"
+SENSOR_DEFINITIONS = "sensor_definitions.json"
 TIME_NOW = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
 EXAMPLE_DICT = {
     "Device ID HEX value goes here": {
@@ -24,7 +25,7 @@ EXAMPLE_DICT = {
     }
 }
 
-
+@logger.catch
 def time_now():
     return datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
 
@@ -33,18 +34,25 @@ def time_now():
 def build_sensor_dict(sensors_list):
     """Return a dict of available sensors formatted per example dict.
     TODO determine if precision can be read or can only be set."""
+    print(f'Start build sensor dict.')
     results = {}
-    EXAMPLE = EXAMPLE_DICT["Device ID HEX value goes here"].copy()
-    for sensor in sensors_list:
-        try:
-            current_reading = sensor.get_temperature()
-        except (errors.SensorNotReadyError, errors.ResetValueError) as error:
-            # TODO log error
-            current_reading = None
-        results[sensor.id] = EXAMPLE.copy()
-        results[sensor.id]["device type"] = sensor.type
-        results[sensor.id]["temperature"] = current_reading
-        results[sensor.id]["most recent date accessed"] = time_now()
+    print(f'Sensor list: {sensors_list}')
+    if sensors_list != None:
+        print(f'Sensor list: {sensors_list}')
+        for sensor in sensors_list:
+            print(f'processing sensor: {sensor}')
+            try:
+                current_reading = sensor.get_temperature()
+            except (errors.SensorNotReadyError, errors.ResetValueError) as error:
+                # TODO log error
+                current_reading = None
+            results[sensor.id] = EXAMPLE_DICT["Device ID HEX value goes here"].copy()
+            results[sensor.id]["device type"] = sensor.type
+            results[sensor.id]["temperature"] = current_reading
+            results[sensor.id]["most recent date accessed"] = time_now()
+    else:
+        # TODO log error
+        pass
     return results
 
 
@@ -67,8 +75,6 @@ def retrieve_json(sensor_file):
     except (FileNotFoundError, JSONDecodeError) as error:
         # TODO log this error: print(f"Error with JSON file: {error}")
         data = {}
-    # TODO read sensor_update_file.JSON for device IDs and location names. Check for changes and update sensor_file.JSON
-    # sensor_update can be modified by the user to re-locate sensor locations or define initial locations.
     return data
 
 
@@ -79,7 +85,7 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
     New devices will be added to the old. Pre-existing records will be updated."""
 
     @logger.catch
-    def compare_devices(old_reading, new_reading):
+    def compare_device_readings(old_reading, new_reading):
         """Compare a single device's record dict to it's old record and update as needed.
         This function does not know what the device ID is. It is only working with the
         dict of values associated with a device."""
@@ -121,16 +127,20 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
         return old_reading
 
     # loop over the dict of devices, This is the dict of device IDs and their associated value dicts.
-    for key, value in new_readings_from_devices.items():
-        # TODO log beginning of updating of device
-        if key not in old_readings_from_devices:
-            # TODO log discovery of new device
-            old_readings_from_devices[key] = value  # add missing or new device
-        else:
-            # this device has a previous record and it needs to be updated.
-            old_readings_from_devices[key] = compare_devices(
-                old_readings_from_devices[key], value
-            )
+    if new_readings_from_devices == None:
+        # TODO log error
+        print('error')
+    else:
+        for key, new_value in new_readings_from_devices.items():
+            # TODO log beginning of updating of device
+            if key not in old_readings_from_devices:
+                # TODO log discovery of new device
+                old_readings_from_devices[key] = new_value  # add missing or new device
+            else:
+                # this device has a previous record and it needs to be updated.
+                old_value = old_readings_from_devices[key]
+                # replace dict record with updated values
+                old_readings_from_devices[key] = compare_device_readings(old_value, new_value)
     # TODO log completion of updating devices record
     return old_readings_from_devices
 
@@ -146,46 +156,54 @@ def write_json(file, sensor_data_dict):
     return
 
 
+def update_device_definitions(reported_devices):
+    """Compare reported devices to the existing JSON file describing known devices. Update accordingly.
+        User of the system may choose to make changes to the JSON file from the system commandline or other access.
+        These changes are normally just to update the description of what is being monitored by each device."""
+    print(f'no function yet for update device definitions')
+    return reported_devices
+
+
 @logger.catch
 def read_temperatures():
     # TODO log start of program
-
+    print('Start function read temps.')
     # create an instance of the monitoring class
     try:
         sensor = W1ThermSensor()
     except errors.NoSensorFoundError as error:
         # TODO log error
+        print('No sensors found {error}')
         sensor = None
-
     # recover json file of sensors
+    print(f'Get JSON file')
     existing_device_records = retrieve_json(SENSOR_JSON_FILE)
-    # default the output to JSON records
-    combined_data = existing_device_records.copy()
     available_sensors = []
+    print(f'SENSOR: {sensor}')
     if sensor != None:
+        print(f'Get available sensors')
         available_sensors = sensor.get_available_sensors()
-        # print(f"Available sensors are: {available_sensors}")
-
-        """
-        # loop through sensors and record their values
-        sensor_dict_of_readings = {}
-        for sensor in available_sensors:
-            sensor_dict_of_readings[sensor.id] = sensor.get_temperature()
-        """
-
-        # create the dictionary of sensors and their associated values
-        active_sensor_data_dict = build_sensor_dict(available_sensors)
-        # print(f"Active sensors dict is:\n{active_sensor_data_dict}")
-
-        # update readings and add missing devices
-        combined_data = update_minmax_records(
-            existing_device_records, active_sensor_data_dict
-        )
-        # print(f"JSON ready dict: \n{combined_data}")
-
-        write_json(SENSOR_JSON_FILE, combined_data)
-
-    # TODO log program exit
+        print(f'AVAILABLE: {available_sensors}')
+        if available_sensors != None:
+            print(f'Process sensors')
+            # TODO read sensor_update_file.JSON for device IDs and location names. Check for changes to update sensor_file.JSON
+            # sensor_definition.JSON can be modified by the user to re-locate sensor locations or define initial locations.
+            available_sensors = update_device_definitions(available_sensors)            
+            # create the dictionary of sensors and their associated values
+            active_sensor_data_dict = build_sensor_dict(available_sensors)
+            # update readings and add missing devices
+            combined_data = update_minmax_records(
+                existing_device_records, active_sensor_data_dict
+            )
+            write_json(SENSOR_JSON_FILE, combined_data)
+        else:
+            # TODO log error getting sensors
+            print('no sensors reporting')
+    else:
+        # TODO log no sensors reporting error
+        # default the output to previous JSON records
+        combined_data = existing_device_records       
+    # TODO log function end
     return {"all records": combined_data, "responding": available_sensors}
 
 

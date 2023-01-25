@@ -1,22 +1,32 @@
 {
+    "EXAMPLE": {
+      "device location": "WHAT IS BEING MONITORED",
+      "accuracy value": 9,
+      "most recently seen": null
+    },  
     "01193a7d23dd": {
       "device location": "HVAC return air",
-      "accuracy value": 9
+      "accuracy value": 9,
+      "most recently seen": null
     },
     "0119366a7bfb": {
       "device location": "3/8inch copper coolant coil",
-      "accuracy value": 9
+      "accuracy value": 9,
+      "most recently seen": null
     },
     "01193a55eea8": {
       "device location": "3/4inch copper coolant coil",
-      "accuracy value": 9
+      "accuracy value": 9,
+      "most recently seen": null
     },
     "011936b41c2c": {
       "device location": "Furnace flue temp",
-      "accuracy value": 9
+      "accuracy value": 9,
+      "most recently seen": null
     },
     "01193a5afb60": {
       "device location": "HVAC output air",
-      "accuracy value": 9
+      "accuracy value": 9,
+      "most recently seen": null
     }
   }

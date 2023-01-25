@@ -1,10 +1,10 @@
 [Unit]
-Description=3023 Old Hill Rd HVAC temperatures monitor
+Description=EntroPi temperature monitor snd recorder
 After=network-online.target
 
 [Service] 
-ExecStart=/usr/bin/python3 -u humidity_and_temps_recorder.py
-WorkingDirectory=/home/breakout
+ExecStart=/usr/bin/python3 -u EntroPi.py
+WorkingDirectory=/home/EntroPi_project/src/EntroPi
 StandardOutput=inherit
 StandardError=inherit
 Restart=on-failure
@@ -13,7 +13,7 @@ StartLimitBurst=2
 #StartLimitInterval=600
 # Restart, but not more than once every 30s (for testing purposes)
 StartLimitInterval=30
-User=breakout
+User=EntroPi
 
 [Install]
 WantedBy=multi-user.target
