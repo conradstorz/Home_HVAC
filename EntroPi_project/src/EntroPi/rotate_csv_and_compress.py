@@ -50,18 +50,19 @@ def zip_files(uncompressed_file_path, remove_uncompressed_file=False):
 
 
 @logger.catch
-def compress_local_csv():
+def compress_local_csv(directory = None):
     print('Start compress function.')
-    directory = "./"
+    if directory == None:
+        directory = "./"
     # Search for CSV files in the directory
     active_recorder_file = generate_csv_filename(basename=BASENAME_CSV_FILE)
     # csv_files_in_local_directory = Path(directory).glob("*.csv")
-    number_of_files_found = len(list(Path(directory).glob("*.csv")))
-    print(f'files found: {Path(directory).glob("*.csv")}')
-    print(f'Length of list: {number_of_files_found}')
-    if number_of_files_found > 1:
+    csv_files_found = list(Path(directory).glob("*.csv"))
+    print(f'files found: {csv_files_found}')
+    print(f'Length of list: {len(csv_files_found)}')
+    if len(csv_files_found) > 1:
         print('loop over files')
-        for file_path in Path(directory).glob("*.csv"):
+        for file_path in csv_files_found:
             print(f'file: {file_path.name}')
             # TODO sort out active files (e.g. yesterday and todays file) and only compress older files
             print(f'{file_path.name} *** {active_recorder_file}')
