@@ -4,6 +4,7 @@ import seaborn as sns
 import csv
 from loguru import logger
 
+
 @logger.catch
 def main():
     # TODO simplify this. Much of this could be done by pandas.
