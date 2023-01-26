@@ -6,6 +6,7 @@ from datetime import datetime
 import json
 from json.decoder import JSONDecodeError
 from loguru import logger
+from CONSTANTS import *
 
 
 @logger.catch

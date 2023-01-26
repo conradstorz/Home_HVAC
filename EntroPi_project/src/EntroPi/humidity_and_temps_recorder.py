@@ -11,6 +11,7 @@ from rotate_csv_and_compress import compress_local_csv
 from loguru import logger
 import time
 from csv_functions import write_csv
+from CONSTANTS import *
 
 
 @logger.catch
