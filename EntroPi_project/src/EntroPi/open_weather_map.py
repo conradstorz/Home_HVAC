@@ -28,6 +28,7 @@ Useful links:
 """
 from loguru import logger
 
+
 @logger.catch
 def get_temp_and_humidity():
     """Contact weather underground and return a tuple of temperature for given zipcode and humidity."""
