@@ -4,7 +4,7 @@ from datetime import datetime
 ZIPCODE = "47119"
 WELCOME_MESSAGE = "Hello\nCircuitPython"
 EXIT_MESSAGE = "Going to sleep\nCya later!"
-BASENAME_CSV_FILE = '_HVAC_temps'
+BASENAME_CSV_FILE = "_HVAC_temps"
 SENSOR_JSON_FILE = "w1devices.json"
 SENSOR_DEFINITIONS = "sensor_definitions.json"
 TIME_NOW = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")

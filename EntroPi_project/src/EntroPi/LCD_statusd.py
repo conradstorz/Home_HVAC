@@ -41,9 +41,9 @@ lcd = character_lcd.Character_LCD_RGB_I2C(i2c, LCD_COLUMNS, LCD_ROWS)
 @logger.catch
 def start_LCD_daemon():
     """Periodically update attached LCD with details of running program.
-    This code exits quickly but could be long running if it is compatible 
+    This code exits quickly but could be long running if it is compatible
     with some type of hypervisor multitasking scheme."""
-    print('Start LCD update.')
+    print("Start LCD update.")
     lcd.clear()
     # Set LCD color to red
     lcd.color = RED_BACKLIGHT
