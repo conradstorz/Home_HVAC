@@ -26,19 +26,20 @@ def write_csv(device_data, directory="."):
             )  # retrieve keys from nested dictionaries
             # print(f"\nCSV file fieldnames:\n{fieldnames}\n")
             out_csv = Path(generate_csv_filename(BASENAME_CSV_FILE))
+            print(f'does CSV file exist: {out_csv.exists()}')
             # check if file exists and write headers if new file
-            if not out_csv.exists:
+            if not out_csv.exists():
                 print(f"\nCSV file does not exist. Creating...")
                 print(f"\nCSV file fieldnames:\n{fieldnames}\n")
                 with open(out_csv, "w", newline="") as h:
                     writer = csv.DictWriter(h, fieldnames=fieldnames)
                     writer.writeheader()
-            else:
-                with open(out_csv, "a", newline="") as h:
-                    writer = csv.DictWriter(h, fieldnames=fieldnames)
-                    # Write a row for each location
-                    for device, values in device_data.items():
-                        writer.writerow(values)
+            print(f'\nAppending file CSV data.')
+            with open(out_csv, "a", newline="") as h:
+                writer = csv.DictWriter(h, fieldnames=fieldnames)
+                # Write a row for each location
+                for device, values in device_data.items():
+                    writer.writerow(values)
             print(f"\nOutput file saved as {out_csv.name}.")
         else:
             # TODO log error
