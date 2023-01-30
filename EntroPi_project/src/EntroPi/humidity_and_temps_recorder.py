@@ -3,7 +3,7 @@ __version__ = "0.1"
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from w1Therm import read_temperatures
+from w1Therm import read_temperatures, time_now
 from dht11_test import get_humidity
 from LCD_statusd import start_LCD_daemon
 from open_weather_map import get_temp_and_humidity
@@ -22,6 +22,7 @@ def main_data_gathering_loop():
         compress_local_csv()
         # TODO call this routine only twice a day (just in case one call fails)
         sensors_reporting = read_temperatures()
+        print(f"{time_now()} Updating readings of {len(sensors_reporting['responding'])} sensors...")
         write_csv(sensors_reporting["all records"])
         if time_delay >= 14:
             time_delay = 0
@@ -29,7 +30,7 @@ def main_data_gathering_loop():
             # get current temp and humidity
             t, h = get_temp_and_humidity(ZIPCODE)
             pass
-        print("Sleeping 1 second...")
+        # print("Sleeping 1 second...")
         time_delay = +1
         time.sleep(1)
     return
@@ -51,9 +52,10 @@ def main():
     else:
         for sensor, value in sensors_reporting["all records"].items():
             # print(f"\nsensor: {sensor}\nvalue: {value}")
-            print(f'\nDevice# {sensor} temperature is: {value["temperature"]}')
+            # print(f'\nDevice# {sensor} temperature is: {value["temperature"]}')
+            pass
 
-    print(f"\nHumidity is: {get_humidity()}")
+    # print(f"\nHumidity is: {get_humidity()}")
 
     # temp_openweather, humidity_openweather = get_temp_and_humidity(ZIPCODE)
 

@@ -19,7 +19,7 @@ def get_current_temps(sensor_dict):
     results = {}
     for deviceID, details in sensor_dict.items():
         results[deviceID] = sensor_dict[deviceID].copy()
-        print(f"\nreading sensor: {deviceID}")
+        # print(f"\nreading sensor: {deviceID}")
         try:
             sensor = W1ThermSensor(sensor_type=Sensor.DS18B20, sensor_id=f"{deviceID}")
             temperature_in_celsius = sensor.get_temperature()
@@ -43,7 +43,7 @@ def build_sensor_dict(sensors_list):
     results = {}
     if sensors_list != None:
         for sensor in sensors_list:
-            print(f"\nprocessing sensor: {sensor}")
+            # print(f"\nprocessing sensor: {sensor}")
             if sensor.id in existing.keys():
                 results[sensor.id] = existing[sensor.id]
             else:
@@ -151,7 +151,7 @@ def update_device_definitions(reported_devices_dict):
     """Compare reported devices to the existing JSON file describing known devices. Update accordingly.
     User of the system may choose to make changes to the JSON file from the system commandline or other access.
     These changes are normally just to update the description of what is being monitored by each device."""
-    print(f"\nBegin updating device location names if needed.")
+    # print(f"\nBegin updating device location names if needed.")
     nothing_changed = True
     output = {}
     # load sensor definitions file
@@ -159,7 +159,7 @@ def update_device_definitions(reported_devices_dict):
     # load the existing sensors file
     existing = retrieve_json(SENSOR_JSON_FILE)
     # loop over reported devices looking for matching device IDs
-    print(f'Comparing reporting devices to definitions file looking for changes.')
+    # print(f'Comparing reporting devices to definitions file looking for changes.')
     for deviceID, details in reported_devices_dict.items():
         # print(f'\n{reported_devices_dict[deviceID]=}')
         output[deviceID] = details
@@ -192,14 +192,14 @@ def update_device_definitions(reported_devices_dict):
     else:
         # update permanent record
         write_json(SENSOR_JSON_FILE, existing)
-    print(f"\nEnd device update")
+    # print(f"\nEnd device update")
     return output
 
 
 @logger.catch
 def read_temperatures():
     # TODO log start of program
-    print("Start function read temps.")
+    # print("Start function read temps.")
     # create an instance of the monitoring class
     try:
         sensor = W1ThermSensor()
@@ -209,16 +209,16 @@ def read_temperatures():
         print("No sensors found {error}")
         sensor = None
     # recover json file of sensors
-    print(f"\nGet JSON file")
+    # print(f"\nGet JSON file")
     existing_device_records = retrieve_json(SENSOR_JSON_FILE)
     available_sensors = []
     # print(f'\nexisting devices: {existing_device_records}')
     if sensor != None:
-        print(f"\nGet available sensors")
+        # print(f"\nGet available sensors")
         available_sensors = sensor.get_available_sensors()
         # print(f'\nAVAILABLE: {available_sensors}')
         if available_sensors != None:
-            print(f"\nProcess sensors")
+            # print(f"\nProcess sensors")
             # create the dictionary of sensors from a list of sensor devices in the W1ThermSensor format
             active_sensor_data_dict = build_sensor_dict(available_sensors)
             # poll sensors for current data

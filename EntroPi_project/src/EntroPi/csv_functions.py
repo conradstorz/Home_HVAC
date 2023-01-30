@@ -15,7 +15,7 @@ def generate_csv_filename(basename=None):
 @logger.catch
 def write_csv(device_data, directory="."):
     # Open the output CSV file and write 'the results
-    print(f"\nBegin saving data...")
+    # print(f"\nBegin saving data...")
     # print(f"\ndevice_data:\n{device_data}\n")
     if device_data != None:
         if device_data != {}:
@@ -26,21 +26,21 @@ def write_csv(device_data, directory="."):
             )  # retrieve keys from nested dictionaries
             # print(f"\nCSV file fieldnames:\n{fieldnames}\n")
             out_csv = Path(generate_csv_filename(BASENAME_CSV_FILE))
-            print(f'does CSV file exist: {out_csv.exists()}')
+            # print(f'does CSV file exist: {out_csv.exists()}')
             # check if file exists and write headers if new file
             if not out_csv.exists():
                 print(f"\nCSV file does not exist. Creating...")
-                print(f"\nCSV file fieldnames:\n{fieldnames}\n")
+                print(f"\CSV file fieldnames:\n{fieldnames}\n")
                 with open(out_csv, "w", newline="") as h:
                     writer = csv.DictWriter(h, fieldnames=fieldnames)
                     writer.writeheader()
-            print(f'\nAppending file CSV data.')
+            # print(f'\nAppending file CSV data.')
             with open(out_csv, "a", newline="") as h:
                 writer = csv.DictWriter(h, fieldnames=fieldnames)
                 # Write a row for each location
                 for device, values in device_data.items():
                     writer.writerow(values)
-            print(f"\nOutput file saved as {out_csv.name}.")
+            # print(f"\nOutput file saved as {out_csv.name}.")
         else:
             # TODO log error
             print("Empty dict unexpected.")
