@@ -51,14 +51,7 @@ def main():
         # TODO log error
         print("no sensors error")
     else:
-        for sensor, value in sensors_reporting["all records"].items():
-            # print(f"\nsensor: {sensor}\nvalue: {value}")
-            # print(f'\nDevice# {sensor} temperature is: {value["temperature"]}')
-            pass
-
-    # print(f"\nHumidity is: {get_humidity()}")
-
-    # temp_openweather, humidity_openweather = get_temp_and_humidity(ZIPCODE)
+        print(f"{time_now()} ::: {len(sensors_reporting['responding'])} sensors found.")
 
     # TODO see if these next 2 functions can be runtogether by some means of multitasking.
     start_LCD_daemon()  # this function currently exits quickly and never runs again
