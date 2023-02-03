@@ -29,7 +29,8 @@ def main_data_gathering_loop():
             # send_to_thingspeak(latest readings)
             # get current temp and humidity
             t, h = get_temp_and_humidity(ZIPCODE)
-            pass
+            print(f'Outdoor temp is: {t}')
+            print(f'Outdoor humidity is: {h}')
         # print("Sleeping 1 second...")
         time_delay = +1
         time.sleep(1)

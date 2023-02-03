@@ -16,7 +16,34 @@ api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=5a51770d8fa87227c5c1a0
 lat = '38.317139'
 lon = '-85.868167'
 API = '5a51770d8fa87227c5c1a07f3f9240fd'
-url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API}"
+url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={API}"
+
+SAMPLE RETURN:
+
+{"coord":{"lon":-85.8682,"lat":38.3171},
+"weather":[{"id":801,"main":"Clouds","description":"few clouds","icon":"02d"}],
+"base":"stations",
+"main":{"temp":26.42,"feels_like":25.72,"temp_min":26.36,"temp_max":26.38,"pressure":1031,"humidity":61},
+"visibility":10000,
+"wind":{"speed":5.14,"deg":350,"gust":9.77},
+"clouds":{"all":20},"dt":1675429404,
+"sys":{"type":2,"id":2003995,"country":"US","sunrise":1675428420,"sunset":1675465650},
+"timezone":-18000,
+"id":4257565,
+"name":"Floyd",
+"cod":200}
+
+import requests
+
+url = "https://example.com/api/data"
+response = requests.get(url)
+
+if response.status_code == 200:
+    data = response.json()
+    # do something with data
+else:
+    print("Failed to retrieve data from API")
+
 
 Useful links:
 - API documentation https://openweathermap.org/api
@@ -25,8 +52,27 @@ Useful links:
 """
 
 
-def get_temp_and_humidity():
+def get_temp_and_humidity(zipcode = None):
+    """Retrieve current weather conditions in a JSON format and return a tuple of temp and humidity."""
+    import requests
+
+    lat = '38.317139'
+    lon = '-85.868167'
+    API = '5a51770d8fa87227c5c1a07f3f9240fd'
+    url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={API}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        print(data)
+    else:
+        print("Failed to retrieve data from API")
+
     """Contact weather underground and return a tuple of temperature for given zipcode and humidity."""
-    temp = 0
-    humid = 0
+    temp = data['main']['temp']
+    humid = data['main']['humidity']
     return (temp, humid)
+
+
+if __name__ == '__main__':
+    print(get_temp_and_humidity())
