@@ -2,11 +2,13 @@
 """
 # load needed modules
 from w1thermsensor import W1ThermSensor, Sensor, Unit, errors
-from datetime import datetime
+from datetime import datetime, timedelta, time, date
 import json
 from json.decoder import JSONDecodeError
 from loguru import logger
 from CONSTANTS import *
+from rotate_csv_and_compress import compress_local_csv
+from open_weather_map import get_temp_and_humidity
 
 
 @logger.catch
@@ -65,6 +67,29 @@ def retrieve_json(sensor_file):
     except (FileNotFoundError, JSONDecodeError) as error:
         # TODO log this error: print(f"Error with JSON file: {error}")
         data = {}
+
+    # see if it is time to update the local weather conditions
+    current_time = datetime.datetime.now()
+    if "last_weather_update" not in sensor_file.keys():
+        # previous record does not exist, create.
+        sensor_file["last_weather_update"] = current_time
+        sensor_file["last_outside_temperature"] = None
+        sensor_file["last_outdoor_humidity"] = None
+    else:
+        last_update = sensor_file["last_weather_update"]
+        if current_time - last_update >= MIN_WEATHER_URL_UPDATE_INTERVAL:
+            # TODO Compress_CSV_files() # CSV files need to be compressed periodically
+            compress_local_csv()
+            # update the local weather conditions
+            sensor_file["last_weather_update"] = current_time
+            # get current temp and humidity
+            t, h = get_temp_and_humidity(ZIPCODE)
+            print(f'Outdoor temp is: {t}')
+            print(f'Outdoor humidity is: {h}')
+            sensor_file["last_outside_temperature"] = t
+            sensor_file["last_outdoor_humidity"] = h
+            # TODO send_to_thingspeak(latest readings)
+
     return data
 
 
@@ -87,9 +112,7 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
                     if key == "most recent date accessed":
                         if new_reading["most recent date accessed"] != None:
                             old_reading[key] = new_reading["most recent date accessed"]
-                            old_reading[
-                                "temperature"
-                            ] = current_device_temperature_reading
+                            old_reading["temperature"] = current_device_temperature_reading
                     if key == "accuracy value" and old_reading[key] != value:
                         # TODO log change in precision
                         old_reading[key] = value
@@ -107,6 +130,15 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
                             # TODO log change in lowest value
                             old_reading[key] = current_device_temperature_reading
                             old_reading["lowest date"] = new_reading["lowest date"]
+                    # update the outdoor temp and humidity records if needed.
+                    if key == "last_outside_temperature":
+                        if new_reading["last_outside_temperature"] != None:
+                            old_reading[key] = new_reading["last_outside_temperature"]
+                            old_reading["last_weather_update"] = new_reading["last_weather_update"]
+                    if key == "last_outdoor_humidity":
+                        if new_reading["last_outdoor_humidity"] != None:
+                            old_reading[key] = new_reading["last_outside_temperature"]
+                            old_reading["last_weather_update"] = new_reading["last_weather_update"]
                 else:
                     # TODO log addition of new monitoring value
                     old_reading[key] = value
@@ -163,6 +195,7 @@ def update_device_definitions(reported_devices_dict):
     for deviceID, details in reported_devices_dict.items():
         # print(f'\n{reported_devices_dict[deviceID]=}')
         output[deviceID] = details
+        # check for device updates from user.
         if deviceID not in definitions.keys():
             print(f"Key not found in location definitions file. {deviceID=}")
             print(f"Nothing to do for this device.")
@@ -244,8 +277,8 @@ def read_temperatures():
 @logger.catch
 def main():
     all, responding = read_temperatures().items()
-    # print(all)
-    # print(f"\n\nOnly devices responding:\n{responding}")
+    print(all)
+    print(f"\n\nOnly devices responding:\n{responding}")
 
 
 if __name__ == "__main__":

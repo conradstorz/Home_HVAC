@@ -3,11 +3,11 @@ __version__ = "0.1"
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from datetime import datetime, timedelta, time, date
 from w1Therm import read_temperatures, time_now
 from dht11_test import get_humidity
 from LCD_statusd import start_LCD_daemon
-from open_weather_map import get_temp_and_humidity
-from rotate_csv_and_compress import compress_local_csv
+
 from loguru import logger
 import time
 from csv_functions import write_csv
@@ -18,21 +18,12 @@ from CONSTANTS import *
 def main_data_gathering_loop():
     time_delay = 0
     while True:
-        # TODO Compress_CSV_files() # CSV files need to be compressed periodically
-        compress_local_csv()
-        # TODO call this routine only twice a day (just in case one call fails)
+
         sensors_reporting = read_temperatures()
+
         print(f"{time_now()} Updating readings of {len(sensors_reporting['responding'])} sensors...")
-        write_csv(sensors_reporting["all records"])
-        if time_delay >= 14:
-            time_delay = 0
-            # send_to_thingspeak(latest readings)
-            # get current temp and humidity
-            t, h = get_temp_and_humidity(ZIPCODE)
-            print(f'Outdoor temp is: {t}')
-            print(f'Outdoor humidity is: {h}')
+        write_csv(sensors_reporting["all records"])        
         # print("Sleeping 1 second...")
-        time_delay = +1
         time.sleep(1)
     return
 
