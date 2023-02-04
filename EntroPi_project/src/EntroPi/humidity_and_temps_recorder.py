@@ -36,13 +36,15 @@ def main():
     print("Start main recorder.")
     sensors_reporting = read_temperatures()
     # print(f"\nsensors reporting:\n{sensors_reporting}")
-    if (sensors_reporting["all records"] == None) or (
-        sensors_reporting["all records"] == {}
-    ):
+    error = True
+    if (sensors_reporting != None):
+        if (sensors_reporting["all records"] != {}):
+            if (sensors_reporting["all records"] != None):
+                print(f"{time_now()} ::: {len(sensors_reporting['responding'])} sensors found.")
+                error = False
+    if error:
         # TODO log error
         print("no sensors error")
-    else:
-        print(f"{time_now()} ::: {len(sensors_reporting['responding'])} sensors found.")
 
     # TODO see if these next 2 functions can be runtogether by some means of multitasking.
     start_LCD_daemon()  # this function currently exits quickly and never runs again
