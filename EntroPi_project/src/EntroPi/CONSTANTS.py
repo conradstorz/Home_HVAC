@@ -7,7 +7,9 @@ EXIT_MESSAGE = "Going to sleep\nCya later!"
 BASENAME_CSV_FILE = "_HVAC_temps"
 SENSOR_JSON_FILE = "w1devices.json"
 SENSOR_DEFINITIONS = "sensor_definitions.json"
-TIME_NOW = datetime.now().strftime("%Y/%m/%d-%H:%M:%S")
+TEMP_AND_HUMIDITY_FILE = "local_conditions.json"
+DATE_FORMAT_AS_STRING = '%Y/%m/%d-%H:%M:%S'
+TIME_NOW = datetime.now().strftime(DATE_FORMAT_AS_STRING)
 MIN_WEATHER_URL_UPDATE_INTERVAL = timedelta(minutes=12)
 EXAMPLE_DICT = {
     "Device ID HEX value goes here": {
@@ -24,7 +26,3 @@ EXAMPLE_DICT = {
     }
 }
 
-"""     "last_weather_update": 0,
-        "last_outside_temperature": None,
-        "last_outdoor_humidity": None,
-"""
