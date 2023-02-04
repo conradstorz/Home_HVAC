@@ -115,15 +115,18 @@ def compare_device_readings(old_reading, new_reading):
     """Compare a single device's record dict to it's old record and update as needed.
     This function does not care what the device ID is. It is only working with the
     dict of values associated with a device."""
+
     COPY_REGARDLESS = ["device location","device type","accuracy value","first seen date",
-        "most recent date accessed","temperature"]
+        "most recent date accessed","temperature","outside temp","outside humidity","inside humidity"]
     output = {}
+
     if new_reading["temperature"] == None:
         # TODO log error that device did not contain valid info
         print('error')
     else:       
         # TODO log beginning of device value comparrison
         for description, observed_value in new_reading.items():
+
             if description in COPY_REGARDLESS:
                 output[description] = observed_value
             else:
@@ -187,10 +190,11 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
 
 
 @logger.catch
-def update_device_definitions(reported_devices_dict):
+def update_device_definitions(reported_devices_dict, local_data, inside_humidity):
     """Compare reported devices to the existing JSON file describing known devices. Update accordingly.
     User of the system may choose to make changes to the JSON file from the system commandline or other access.
-    These changes are normally just to update the description of what is being monitored by each device."""
+    These changes are normally just to update the description of what is being monitored by each device.
+    Local data for outside conditions gets added."""
     # print(f"\nBegin updating device location names if needed.")
     output = {}
     # load sensor definitions file
@@ -202,6 +206,9 @@ def update_device_definitions(reported_devices_dict):
     for deviceID, details in reported_devices_dict.items():
         # print(f'\n{reported_devices_dict[deviceID]=}')
         output[deviceID] = details
+        output[deviceID]["outside temp"] = local_data['last_outside_temperature']
+        output[deviceID]["outside humidity"] = local_data['last_outdoor_humidity']
+        output[deviceID]["inside humidity"] = inside_humidity
         # check for device updates from user.
         if deviceID not in definitions.keys():
             print(f"Key not found in location definitions file. {deviceID=}")
@@ -225,6 +232,7 @@ def update_device_definitions(reported_devices_dict):
 
 @logger.catch
 def read_temperatures():
+    """Read temp sensing devices and include local weather conditions."""
     # TODO log start of program
     # print("Start function read temps.")
     # create an instance of the monitoring class
@@ -241,8 +249,12 @@ def read_temperatures():
     available_sensors = []
     # print(f'\nexisting devices: {existing_device_records}')
     if sensor != None:
+        # get local conditions
+        local_data = update_temp_and_humidity()        
+
         # print(f"\nGet available sensors")
         available_sensors = sensor.get_available_sensors()
+
         # print(f'\nAVAILABLE: {available_sensors}')
         if available_sensors != None:
             # print(f"\nProcess sensors")
@@ -252,7 +264,10 @@ def read_temperatures():
             current_sensor_data_dict = get_current_temps(active_sensor_data_dict)
             # sensor_definition.JSON can be modified by the user to re-locate sensor locations or define initial locations.
             # print(f'\n{active_sensor_data_dict=}')
-            updated_dict = update_device_definitions(current_sensor_data_dict)
+            # get inside humidity
+            inside_humidity  = 0
+            # combine local data with sensor readings data
+            updated_dict = update_device_definitions(current_sensor_data_dict, local_data, inside_humidity)
             # print(f'\n{updated_dict=}')
             # update readings and add missing devices
             combined_data = update_minmax_records(existing_device_records, updated_dict)
@@ -264,8 +279,6 @@ def read_temperatures():
         # TODO log no sensor object available
         # default the output to previous JSON records
         combined_data = existing_device_records
-    # get local conditions
-    local_data = update_temp_and_humidity()
     # TODO log function end
     return {"all records": combined_data, "responding": available_sensors, "local_conditions": local_data}
 

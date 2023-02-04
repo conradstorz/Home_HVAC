@@ -25,13 +25,12 @@ Useful links:
 - Please, note that 16-days daily forecast and History API are not available for Free subscribers
 """
 from loguru import logger
-
+import os
+import requests
 
 @logger.catch
 def get_local_conditions(zipcode=None):
     """Contact weather underground and return a tuple of temperature for given zipcode and humidity."""
-    import os
-    import requests
 
     api_key = os.environ.get('OPEN_WEATHER_API')
     lat = '38.317139'
@@ -42,11 +41,11 @@ def get_local_conditions(zipcode=None):
 
     if response.status_code == 200:
         data = response.json()
-        print(data)
-        # do something with data
+        # print(data)
     else:
         print("Failed to retrieve data from API")    
         print(url)
-    temp = 0
-    humid = 0
+        
+    temp = data['main']['temp']
+    humid = data['main']['humidity']
     return (temp, humid)

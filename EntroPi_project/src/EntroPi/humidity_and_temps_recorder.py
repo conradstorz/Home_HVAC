@@ -16,12 +16,11 @@ from CONSTANTS import *
 
 @logger.catch
 def main_data_gathering_loop():
-    time_delay = 0
     while True:
-
         sensors_reporting = read_temperatures()
-
         print(f"{time_now_string()} Updating readings of {len(sensors_reporting['responding'])} sensors...")
+        # TODO add local weather conditions to CSV output
+        # TODO add indoor humidity to CSV report
         write_csv(sensors_reporting["all records"])        
         # print("Sleeping 1 second...")
         time.sleep(1)
@@ -31,8 +30,6 @@ def main_data_gathering_loop():
 @logger.catch
 def main():
     # TODO make a seperate script webserver that displays all details and offers ability to rename sensors
-    # TODO find a way to make IP address discoverable without attaching a monitor to the pi
-    # TODO maybe use a common name that can be typed into a web browser on the same intranet
     print("Start main recorder.")
     sensors_reporting = read_temperatures()
     # print(f"\nsensors reporting:\n{sensors_reporting}")

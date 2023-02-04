@@ -23,6 +23,9 @@ EXAMPLE_DICT = {
         "highest date": TIME_NOW,
         "lowest value": None,
         "lowest date": TIME_NOW,
+        "outside temp": None,
+        "outside humidity": None,
+        "inside humidity": None
     }
 }
 
