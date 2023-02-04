@@ -23,10 +23,10 @@ def write_csv(device_data, directory="."):
     if device_data != None:
         if device_data != {}:
             first_key = list(device_data)[0]
+            # grab the first entry as an example
             first_device_values = device_data[first_key]
-            fieldnames = (
-                first_device_values.keys()
-            )  # retrieve keys from nested dictionaries
+            # retrieve keys from nested dictionaries
+            fieldnames = (first_device_values.keys())  
             # print(f"\nCSV file fieldnames:\n{fieldnames}\n")
             out_csv = Path(generate_csv_filename(BASENAME_CSV_FILE))
             # print(f'does CSV file exist: {out_csv.exists()}')
