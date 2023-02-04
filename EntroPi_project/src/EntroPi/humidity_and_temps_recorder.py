@@ -4,7 +4,7 @@ __version__ = "0.1"
 # -*- coding: utf-8 -*-
 
 from datetime import datetime, timedelta, time, date
-from w1Therm import read_temperatures, time_now
+from w1Therm import read_temperatures, time_now_string
 from dht11_test import get_humidity
 from LCD_statusd import start_LCD_daemon
 
@@ -21,10 +21,10 @@ def main_data_gathering_loop():
 
         sensors_reporting = read_temperatures()
 
-        print(f"{time_now()} Updating readings of {len(sensors_reporting['responding'])} sensors...")
+        print(f"{time_now_string()} Updating readings of {len(sensors_reporting['responding'])} sensors...")
         write_csv(sensors_reporting["all records"])        
         # print("Sleeping 1 second...")
-        time.sleep(1)
+        time.sleep(15)
     return
 
 
@@ -40,7 +40,7 @@ def main():
     if (sensors_reporting != None):
         if (sensors_reporting["all records"] != {}):
             if (sensors_reporting["all records"] != None):
-                print(f"{time_now()} ::: {len(sensors_reporting['responding'])} sensors found.")
+                print(f"{time_now_string()} ::: {len(sensors_reporting['responding'])} sensors found.")
                 error = False
     if error:
         # TODO log error
