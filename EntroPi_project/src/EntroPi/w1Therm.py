@@ -265,7 +265,7 @@ def read_temperatures():
         # default the output to previous JSON records
         combined_data = existing_device_records
     # get local conditions
-    local_data = get_local_conditions()
+    local_data = update_temp_and_humidity()
     # TODO log function end
     return {"all records": combined_data, "responding": available_sensors, "local_conditions": local_data}
 

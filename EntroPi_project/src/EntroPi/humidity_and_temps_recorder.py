@@ -24,7 +24,7 @@ def main_data_gathering_loop():
         print(f"{time_now_string()} Updating readings of {len(sensors_reporting['responding'])} sensors...")
         write_csv(sensors_reporting["all records"])        
         # print("Sleeping 1 second...")
-        time.sleep(15)
+        time.sleep(1)
     return
 
 
