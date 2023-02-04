@@ -5,11 +5,7 @@ TODO get outside temperature and humidity from open weather map and place into c
 TODO note that once per 12 minutes is probably frequent enough to check temps and humidity
 Thank you for subscribing to Free OpenWeatherMap!
 
-API key:
-- Your API key is 5a51770d8fa87227c5c1a07f3f9240fd
-- Within the next couple of hours, it will be activated and ready to use
-- You can later create more API keys on your account page
-- Please, always use your API key in each API call
+API key is now stored in the system environment
 
 Endpoint:
 - Please, use the endpoint api.openweathermap.org for your API calls
@@ -18,8 +14,10 @@ api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=5a51770d8fa87227c5c1a0
 
 lat = '38.317139'
 lon = '-85.868167'
-API = '5a51770d8fa87227c5c1a07f3f9240fd'
-url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lon}&appid={API}"
+API = see system environment variable
+import os
+api_key = os.environ.get('OPEN_WEATHER_API')
+url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={api_key}"
 
 Useful links:
 - API documentation https://openweathermap.org/api
@@ -32,6 +30,23 @@ from loguru import logger
 @logger.catch
 def get_local_conditions(zipcode=None):
     """Contact weather underground and return a tuple of temperature for given zipcode and humidity."""
+    import os
+    import requests
+
+    api_key = os.environ.get('OPEN_WEATHER_API')
+    lat = '38.317139'
+    lon = '-85.868167'
+
+    url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={api_key}"
+    response = requests.get(url)
+
+    if response.status_code == 200:
+        data = response.json()
+        print(data)
+        # do something with data
+    else:
+        print("Failed to retrieve data from API")    
+        print(url)
     temp = 0
     humid = 0
     return (temp, humid)
