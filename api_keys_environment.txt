@@ -1,0 +1,52 @@
+In Linux, you can make environment variables "sticky" or persistent across sessions 
+by defining them in a profile file such as ~/.bashrc or ~/.bash_profile.
+
+Here's how you can make an environment variable persistent in Linux:
+
+Open the profile file: Open the ~/.bashrc file in a text editor. 
+If the file does not exist, create it.
+
+Add the environment variable: Add the following line to the file, 
+replacing MY_API_KEY with the name of your environment variable 
+and 123456789 with its value:
+
+javascript
+Copy code
+export MY_API_KEY=123456789
+Save and close the file: Save the changes to the ~/.bashrc file 
+and close the text editor.
+
+Reload the profile: You can reload the profile file in the current shell 
+by running the following command:
+
+bash
+Copy code
+source ~/.bashrc
+Verify the environment variable: You can verify that the environment variable 
+has been set correctly by running the following command:
+
+bash
+Copy code
+echo $MY_API_KEY
+Now the environment variable MY_API_KEY will be set every time you log in 
+to the system.
+
+Access the environment variable in Python: 
+You can access the value of an environment variable in Python 
+using the os module, specifically the os.environ dictionary. For example:
+
+java
+Copy code
+import os
+
+api_key = os.environ.get('MY_API_KEY')
+Use the environment variable: Once you have the value of 
+the environment variable, you can use it in your code as needed. For example:
+
+python
+Copy code
+print("My API key is:", api_key)
+This way, you can use environment variables to store sensitive information 
+like API keys, and avoid hard-coding them in your code. 
+This helps improve the security of your application, as well as making 
+it easier to manage and change API keys as needed.
