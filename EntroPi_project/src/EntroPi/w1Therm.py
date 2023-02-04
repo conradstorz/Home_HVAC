@@ -59,37 +59,54 @@ def build_sensor_dict(sensors_list):
 
 
 @logger.catch
-def retrieve_json(sensor_file):
+def retrieve_json(file_name):
     """JSON file is a key/value file of device IDs of previously found devices."""
     try:
-        with open(sensor_file, "r") as f:
+        with open(file_name, "r") as f:
             data = json.load(f)
     except (FileNotFoundError, JSONDecodeError) as error:
         # TODO log this error: print(f"Error with JSON file: {error}")
         data = {}
+    return data
 
+
+@logger.catch
+def write_json(file_name, data_dict):
+    """Accept a dictionary that describe sensors and
+    write out to the specified JSON file."""
+    # Save the updated JSON file
+    with open(file_name, "w") as outfile:
+        json.dump(data_dict, outfile, indent=2)
+    return
+
+
+@logger.catch
+def get_temp_and_humidity():
+    """Check time delay and get download from OpenWeather.com if time is right."""
+    data = retrieve_json(TEMP_AND_HUMIDITY_FILE)
     # see if it is time to update the local weather conditions
-    current_time = datetime.datetime.now()
-    if "last_weather_update" not in sensor_file.keys():
+    current_time = datetime.now()
+    if "last_weather_update" not in data.keys():
         # previous record does not exist, create.
-        sensor_file["last_weather_update"] = current_time
-        sensor_file["last_outside_temperature"] = None
-        sensor_file["last_outdoor_humidity"] = None
+        data["last_weather_update"] = current_time.strftime(DATE_FORMAT_AS_STRING)
+        data["last_outside_temperature"] = None
+        data["last_outdoor_humidity"] = None
     else:
-        last_update = sensor_file["last_weather_update"]
+        last_update = data["last_weather_update"]
+        last_update = datetime.strptime(last_update, DATE_FORMAT_AS_STRING)
         if current_time - last_update >= MIN_WEATHER_URL_UPDATE_INTERVAL:
             # TODO Compress_CSV_files() # CSV files need to be compressed periodically
             compress_local_csv()
             # update the local weather conditions
-            sensor_file["last_weather_update"] = current_time
+            data["last_weather_update"] = current_time.strftime(DATE_FORMAT_AS_STRING)
             # get current temp and humidity
-            t, h = get_temp_and_humidity(ZIPCODE)
-            print(f'Outdoor temp is: {t}')
-            print(f'Outdoor humidity is: {h}')
-            sensor_file["last_outside_temperature"] = t
-            sensor_file["last_outdoor_humidity"] = h
+            outside_temperature, outside_humidity = get_temp_and_humidity(zipcode=ZIPCODE)
+            print(f'Outdoor temp is: {outside_temperature}')
+            print(f'Outdoor humidity is: {outside_humidity}')
+            data["last_outside_temperature"] = outside_temperature
+            data["last_outdoor_humidity"] = outside_humidity
             # TODO send_to_thingspeak(latest readings)
-
+    write_json(TEMP_AND_HUMIDITY_FILE, data)
     return data
 
 
@@ -130,15 +147,6 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
                             # TODO log change in lowest value
                             old_reading[key] = current_device_temperature_reading
                             old_reading["lowest date"] = new_reading["lowest date"]
-                    # update the outdoor temp and humidity records if needed.
-                    if key == "last_outside_temperature":
-                        if new_reading["last_outside_temperature"] != None:
-                            old_reading[key] = new_reading["last_outside_temperature"]
-                            old_reading["last_weather_update"] = new_reading["last_weather_update"]
-                    if key == "last_outdoor_humidity":
-                        if new_reading["last_outdoor_humidity"] != None:
-                            old_reading[key] = new_reading["last_outside_temperature"]
-                            old_reading["last_weather_update"] = new_reading["last_weather_update"]
                 else:
                     # TODO log addition of new monitoring value
                     old_reading[key] = value
@@ -167,16 +175,6 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
                 )
     # TODO log completion of updating devices record
     return old_readings_from_devices
-
-
-@logger.catch
-def write_json(file, sensor_data_dict):
-    """Accept a dictionary that describe sensors and
-    write out to the specified JSON file."""
-    # Save the updated JSON file
-    with open(file, "w") as outfile:
-        json.dump(sensor_data_dict, outfile, indent=2)
-    return
 
 
 def update_device_definitions(reported_devices_dict):
@@ -270,8 +268,10 @@ def read_temperatures():
         # TODO log no sensor object available
         # default the output to previous JSON records
         combined_data = existing_device_records
+    # get local conditions
+    local_data = get_temp_and_humidity()
     # TODO log function end
-    return {"all records": combined_data, "responding": available_sensors}
+    return {"all records": combined_data, "responding": available_sensors, "local_conditions": local_data}
 
 
 @logger.catch
