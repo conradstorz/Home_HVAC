@@ -8,7 +8,7 @@ from loguru import logger
 def main():
     readings_by_location = {}
     # Open the CSV file and read the contents
-    with open("20230202_HVAC_temps.csv", "r") as f:
+    with open("20230206_HVAC_temps.csv", "r") as f:
         # TODO make compat with zipped csv
         # TODO make interactive to choose from several
         # TODO make to choose most recent from directory automatically
@@ -16,7 +16,7 @@ def main():
         # Iterate through the rows of the CSV file
         for row in reader:
             r = row["device location"]
-            v = (row["temperature"], row["most recent date accessed"])
+            v = (row["temperature"], row["most recent date accessed"], row["outside temp"])
             # TODO allow specification of minimum/maximum sample rate by discarding extra samples
             if r in readings_by_location.keys():
                 readings_by_location[r] = readings_by_location[r] + [v]
@@ -31,9 +31,10 @@ def main():
     with open(out_csv, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Name", "Temp", "Time"])
-        for key, value in readings_by_location.items():
-            for val in value:
-                writer.writerow([key, val[0], val[1]])
+        for location_name, location_details in readings_by_location.items():
+            for val in location_details:
+                writer.writerow([location_name, val[0], val[1]])
+                writer.writerow(['Outside_temp',v[2],v[1]])
 
     print(f"Output file saved as {out_csv}.")
 
