@@ -39,13 +39,15 @@ def get_local_conditions(zipcode=None):
     url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={api_key}"
     response = requests.get(url)
 
+    temp = None
+    humid = None
+    
     if response.status_code == 200:
         data = response.json()
-        # print(data)
+        temp = data['main']['temp']
+        humid = data['main']['humidity']
     else:
         print("Failed to retrieve data from API")    
         print(url)
-        
-    temp = data['main']['temp']
-    humid = data['main']['humidity']
+
     return (temp, humid)
