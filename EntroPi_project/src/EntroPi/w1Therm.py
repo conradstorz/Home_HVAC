@@ -24,8 +24,9 @@ def get_current_temps(sensor_dict):
         # print(f"\nreading sensor: {deviceID}")
         try:
             sensor = W1ThermSensor(sensor_type=Sensor.DS18B20, sensor_id=f"{deviceID}")
-            temperature_in_celsius = sensor.get_temperature()
-            current_reading = temperature_in_celsius
+            temperature_in_F = sensor.get_temperature(Unit.DEGREES_F)
+            # TODO limit temp reading to one decimal place
+            current_reading = temperature_in_F
         except (errors.SensorNotReadyError, errors.ResetValueError) as error:
             # TODO log error
             print(f'Error reading sensor: {deviceID} with error: {error}')
@@ -36,16 +37,56 @@ def get_current_temps(sensor_dict):
 
 
 @logger.catch
+def read_temperatures():
+    """Read temp sensing devices and include local weather conditions."""
+    # TODO log start of program
+    # create an instance of the monitoring class
+    try:
+        sensor = W1ThermSensor()
+    except errors.NoSensorFoundError as error:
+        # TODO log error
+        print("No sensors found {error}")
+        sensor = None
+    # recover json file of sensors
+    existing_device_records = retrieve_json(SENSOR_JSON_FILE)
+    available_sensors = []
+    if sensor != None:
+        # get local conditions
+        local_data = update_temp_and_humidity()
+        # get inside humidity
+        inside_humidity  = 0                
+        available_sensors = sensor.get_available_sensors()
+        if available_sensors != None:
+            # create the dictionary of sensors from a list of sensor devices in the W1ThermSensor format
+            active_sensor_data_dict = build_sensor_dict(available_sensors)
+            # poll sensors for current data
+            current_sensor_data_dict = get_current_temps(active_sensor_data_dict)
+            # sensor_definition.JSON can be modified by the user to re-locate sensor locations or define initial locations.
+            # combine local data with sensor readings data
+            updated_dict = update_device_definitions(current_sensor_data_dict, local_data, inside_humidity)
+            # update readings and add missing devices
+            combined_data = update_minmax_records(existing_device_records, updated_dict)
+            write_json(SENSOR_JSON_FILE, combined_data)
+        else:
+            # TODO log error getting sensors
+            print("no sensors reporting")
+    else:
+        # TODO log no sensor object available
+        # default the output to previous JSON records
+        combined_data = existing_device_records
+    # TODO log function end
+    return {"all records": combined_data, "responding": available_sensors, "local_conditions": local_data}
+
+
+@logger.catch
 def build_sensor_dict(sensors_list):
     """Return a dict of available sensors (from a list of W1ThermSensor data records) formatted per example dict.
     TODO determine if precision can be read or can only be set."""
-    # print(f'\nStart build sensor dict from: {sensors_list}')
     # load the existing sensors file
     existing = retrieve_json(SENSOR_JSON_FILE)    
     results = {}
     if sensors_list != None:
         for sensor in sensors_list:
-            # print(f"\nprocessing sensor: {sensor}")
             if sensor.id in existing.keys():
                 results[sensor.id] = existing[sensor.id]
             else:
@@ -54,7 +95,6 @@ def build_sensor_dict(sensors_list):
     else:
         # TODO log error
         print(f'Sensor list is None.')
-    # print(f'\n{results=}')
     return results
 
 
@@ -95,7 +135,7 @@ def update_temp_and_humidity():
         last_update = data["last_weather_update"]
         last_update = datetime.strptime(last_update, DATE_FORMAT_AS_STRING)
         if current_time - last_update >= MIN_WEATHER_URL_UPDATE_INTERVAL:
-            # TODO Compress_CSV_files() # CSV files need to be compressed periodically
+            # CSV files need to be compressed periodically
             compress_local_csv()
             # update the local weather conditions
             data["last_weather_update"] = current_time.strftime(DATE_FORMAT_AS_STRING)
@@ -105,6 +145,7 @@ def update_temp_and_humidity():
             print(f'Outdoor humidity is: {outside_humidity}')
             data["last_outside_temperature"] = outside_temperature
             data["last_outdoor_humidity"] = outside_humidity
+            # TODO write to CSV and remove placing this data into each sensor entry
             # TODO send_to_thingspeak(latest readings)
     write_json(TEMP_AND_HUMIDITY_FILE, data)
     return data
@@ -115,11 +156,10 @@ def compare_device_readings(old_reading, new_reading):
     """Compare a single device's record dict to it's old record and update as needed.
     This function does not care what the device ID is. It is only working with the
     dict of values associated with a device."""
-
+    # TODO take outside readings off here. They will get entered at the time of reading
     COPY_REGARDLESS = ["device location","device type","accuracy value","first seen date",
         "most recent date accessed","temperature","outside temp","outside humidity","inside humidity"]
     output = {}
-
     if new_reading["temperature"] == None:
         # TODO log error that device did not contain valid info
         print('error')
@@ -160,10 +200,8 @@ def compare_device_readings(old_reading, new_reading):
                             # retain the old reading
                             output["lowest value"] = old_reading["lowest value"]
                             output["lowest date"] = old_reading["lowest date"]
-
     # TODO log completion of updating individual device values.
     return output
-
 
 
 @logger.catch
@@ -228,59 +266,6 @@ def update_device_definitions(reported_devices_dict, local_data, inside_humidity
     write_json(SENSOR_JSON_FILE, output)
     print(f"\nEnd device update")
     return output
-
-
-@logger.catch
-def read_temperatures():
-    """Read temp sensing devices and include local weather conditions."""
-    # TODO log start of program
-    # print("Start function read temps.")
-    # create an instance of the monitoring class
-    try:
-        sensor = W1ThermSensor()
-        # print(f"\nSENSOR: {sensor}")
-    except errors.NoSensorFoundError as error:
-        # TODO log error
-        print("No sensors found {error}")
-        sensor = None
-    # recover json file of sensors
-    # print(f"\nGet JSON file")
-    existing_device_records = retrieve_json(SENSOR_JSON_FILE)
-    available_sensors = []
-    # print(f'\nexisting devices: {existing_device_records}')
-    if sensor != None:
-        # get local conditions
-        local_data = update_temp_and_humidity()        
-
-        # print(f"\nGet available sensors")
-        available_sensors = sensor.get_available_sensors()
-
-        # print(f'\nAVAILABLE: {available_sensors}')
-        if available_sensors != None:
-            # print(f"\nProcess sensors")
-            # create the dictionary of sensors from a list of sensor devices in the W1ThermSensor format
-            active_sensor_data_dict = build_sensor_dict(available_sensors)
-            # poll sensors for current data
-            current_sensor_data_dict = get_current_temps(active_sensor_data_dict)
-            # sensor_definition.JSON can be modified by the user to re-locate sensor locations or define initial locations.
-            # print(f'\n{active_sensor_data_dict=}')
-            # get inside humidity
-            inside_humidity  = 0
-            # combine local data with sensor readings data
-            updated_dict = update_device_definitions(current_sensor_data_dict, local_data, inside_humidity)
-            # print(f'\n{updated_dict=}')
-            # update readings and add missing devices
-            combined_data = update_minmax_records(existing_device_records, updated_dict)
-            write_json(SENSOR_JSON_FILE, combined_data)
-        else:
-            # TODO log error getting sensors
-            print("no sensors reporting")
-    else:
-        # TODO log no sensor object available
-        # default the output to previous JSON records
-        combined_data = existing_device_records
-    # TODO log function end
-    return {"all records": combined_data, "responding": available_sensors, "local_conditions": local_data}
 
 
 @logger.catch
