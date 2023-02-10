@@ -5,40 +5,53 @@ from loguru import logger
 
 
 @logger.catch
-def main():
+
+@logger.catch
+def get_CSV_data():
+    """Return a dict of CSV keys/values"""
     readings_by_location = {}
     # Open the CSV file and read the contents
-    with open("20230206_HVAC_temps.csv", "r") as f:
-        # TODO make compat with zipped csv
-        # TODO make interactive to choose from several
-        # TODO make to choose most recent from directory automatically
+    # TODO make compat with zipped csv
+    # TODO make interactive to choose from several
+    # TODO make to choose most recent from directory automatically    
+    with open("20230209_HVAC_temps.csv", "r") as f:
         reader = csv.DictReader(f)
         # Iterate through the rows of the CSV file
         for row in reader:
-            r = row["device location"]
-            v = (row["temperature"], row["most recent date accessed"], row["outside temp"])
+            device = row["device location"]
+            observation = (row["temperature"], row["most recent date accessed"])
             # TODO allow specification of minimum/maximum sample rate by discarding extra samples
-            if r in readings_by_location.keys():
-                readings_by_location[r] = readings_by_location[r] + [v]
+            if device in readings_by_location.keys():
+                readings_by_location[device] = readings_by_location[device] + [observation]
             else:
-                readings_by_location[r] = [v]
+                readings_by_location[device] = [observation]
+    return readings_by_location
 
-    # print(f'READINGS BY LOCATION DICT:\n{readings_by_location}')
 
+@logger.catch
+def send_data_to_csv(data):
+    """Send a dict to CSV and return the filename."""
     # Open the output CSV file and write the results
     out_csv = "temperature_Report.csv"
-
     with open(out_csv, "w", newline="") as csvfile:
         writer = csv.writer(csvfile)
         writer.writerow(["Name", "Temp", "Time"])
-        for location_name, location_details in readings_by_location.items():
+        for location_name, location_details in data.items():
             for val in location_details:
                 writer.writerow([location_name, val[0], val[1]])
-                writer.writerow(['Outside_temp',v[2],v[1]])
+    return out_csv
 
-    print(f"Output file saved as {out_csv}.")
 
-    df = pd.read_csv("temperature_Report.csv")
+@logger.catch
+def main():
+    # access the data
+    readings = get_CSV_data()
+
+    # send the dict data to a new CSV
+    outputfile = send_data_to_csv(readings)
+    print(f"Output file saved as {outputfile}.")
+
+    df = pd.read_csv(outputfile)
     print(df)
 
     df = df.pivot_table(index="Time", columns="Name", values="Temp")
