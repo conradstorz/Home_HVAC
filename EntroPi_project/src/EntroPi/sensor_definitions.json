@@ -1,32 +1,34 @@
 {
+    "COMMENT; these entries are olny representative of values that can be changed by the user.":
+    "This file is refernced by the system to match names to device HEX IDs and update when changed.",
     "EXAMPLE": {
       "device location": "WHAT IS BEING MONITORED",
-      "accuracy value": 9,
-      "most recently seen": null
-    },  
+      "accuracy value": 9
+    },
+    "COMMENT; Local conditions is not acutually going to be changed by the user,":
+    "It is included here only because it will be considered like any other sensing device.",
+    "LOCAL CONDITIONS": {
+      "device location": "OpenWeather.com data",
+      "accuracy value": 0
+    },
     "01193a7d23dd": {
       "device location": "HVAC return air",
-      "accuracy value": 9,
-      "most recently seen": null
+      "accuracy value": 9
     },
     "0119366a7bfb": {
       "device location": "3/8inch copper coolant coil",
-      "accuracy value": 9,
-      "most recently seen": null
+      "accuracy value": 9
     },
     "01193a55eea8": {
       "device location": "3/4inch copper coolant coil",
-      "accuracy value": 9,
-      "most recently seen": null
+      "accuracy value": 9
     },
     "011936b41c2c": {
       "device location": "Furnace flue temp",
-      "accuracy value": 9,
-      "most recently seen": null
+      "accuracy value": 9
     },
     "01193a5afb60": {
       "device location": "HVAC output air",
-      "accuracy value": 9,
-      "most recently seen": null
+      "accuracy value": 9
     }
   }
