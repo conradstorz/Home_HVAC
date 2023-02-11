@@ -1,5 +1,5 @@
 from nicegui import ui
-from w1Therm import retrieve_json
+from htr_readings import retrieve_json
 
 SENSOR_JSON_FILE = "w1devices.json"
 # read the JSON file

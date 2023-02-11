@@ -4,8 +4,7 @@ __version__ = "0.1"
 # -*- coding: utf-8 -*-
 
 from datetime import datetime, timedelta, time, date
-from w1Therm import read_temperatures, time_now_string
-from dht11_test import get_humidity
+from htr_readings import read_temperatures
 from LCD_statusd import start_LCD_daemon
 
 from loguru import logger
