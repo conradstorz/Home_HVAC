@@ -11,8 +11,9 @@ pin = 25
 # Try to grab a sensor reading.  Use the read_retry method which will retry up
 # to 15 times to get a sensor reading (waiting 2 seconds between each retry).
 def get_humidity():
-    humidity, temperature = Adafruit_DHT.read_retry(sensor, pin)
-    return humidity
+    humidity, celsius = Adafruit_DHT.read_retry(sensor, pin)
+    temperature = (celsius * 9/5) + 32
+    return (temperature, humidity)
 
 
 # Note that sometimes you won't get a reading and
@@ -22,9 +23,9 @@ def get_humidity():
 
 
 def main():
-    humidity = get_humidity()
-    if humidity is not None:
-        print(f"Humidity={humidity:0.1f}%")
+    temp, humid = get_humidity()
+    if humid is not None:
+        print(f"Humidity={humid:0.1f}% Temperature={temp:0.1f}F")
     else:
         print("Failed to get reading. Try again!")
 
