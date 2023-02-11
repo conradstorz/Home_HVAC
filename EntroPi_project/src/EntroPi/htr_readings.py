@@ -61,28 +61,40 @@ def update_temp_and_humidity():
     # see if it is time to update the local weather conditions
     current_time = datetime.now() # This reading needs to be a datetime not a datestring
     if "Last weather update" not in data.keys():
-        # previous record does not exist, create.
-        data["Last weather update"] = current_time.strftime(DATE_FORMAT_AS_STRING)
-        data["Last outside temperature"] = None
-        data["Last outdoor humidity"] = None
+        # entry doen't exist, create. Set time to past interval.
+        last_update = current_time - MIN_WEATHER_URL_UPDATE_INTERVAL
+        data["Last weather update"] = last_update.strftime(DATE_FORMAT_AS_STRING)
     else:
         last_update = data["Last weather update"]
-        last_update = datetime.strptime(last_update, DATE_FORMAT_AS_STRING)
+        try:
+            # derive datetime object from datestring
+            last_update = datetime.strptime(last_update, DATE_FORMAT_AS_STRING)
+        except TypeError as error:
+            # entry can't be parsed, create. Set time to past interval.
+            last_update = current_time - MIN_WEATHER_URL_UPDATE_INTERVAL
+            data["Last weather update"] = last_update.strftime(DATE_FORMAT_AS_STRING)
         if current_time - last_update >= MIN_WEATHER_URL_UPDATE_INTERVAL:
-            # CSV files need to be compressed periodically
-            compress_local_csv()
-            # read local humidity device attached to the device this program is running on.
-            data["Humidity at device"] = get_humidity_reading()
-            # update the local weather conditions
-            data["Last weather update"] = current_time.strftime(DATE_FORMAT_AS_STRING)
-            # get current temp and humidity
+            # time to poll external website.
+            data["Last weather update"] = current_time.strftime(DATE_FORMAT_AS_STRING)            
+            
+            # update the local weather conditions, get current temp and humidity
             outside_temperature, outside_humidity = get_local_conditions(zipcode=ZIPCODE)
             print(f'Outdoor temp is: {outside_temperature}')
             print(f'Outdoor humidity is: {outside_humidity}')
             data["Last outside temperature"] = outside_temperature
             data["Last outdoor humidity"] = outside_humidity
-            # TODO write to CSV
+            
+            # read local humidity device attached to the device this program is running on.
+            data["Temperature at device"], data["Humidity at device"] = get_humidity_reading()
+
+            # TODO write to CSV, formatted same as any other device
+            
             # TODO send_to_thingspeak(latest readings)
+            
+            # CSV files need to be compressed periodically
+            compress_local_csv()
+        else:
+            last_update = current_time - MIN_WEATHER_URL_UPDATE_INTERVAL
     write_json(TEMP_AND_HUMIDITY_FILE, data)
     return data
 
