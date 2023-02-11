@@ -1,9 +1,7 @@
 {
-  "Last weather update": "2023/02/11-06:54:42",
-  "Last outside temperature": 26.44,
-  "Last outdoor humidity": 93,
-  "Humidity at device": [
-    68.0,
-    41.0
-  ]
+  "Last weather update": "2023/02/11-07:52:46",
+  "Last outside temperature": 25.56,
+  "Last outdoor humidity": 92,
+  "Temperature at device": 66.2,
+  "Humidity at device": 40.0
 }
