@@ -27,3 +27,8 @@ def get_local_conditions(zipcode=None):
         print(url)
 
     return (temp, humid)
+
+
+if __name__ == '__main__':
+    print(get_local_conditions())
+    

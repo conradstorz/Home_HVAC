@@ -60,3 +60,7 @@ def write_json(file_name, data_dict):
         json.dump(data_dict, outfile, indent=2)
     return
 
+
+if __name__ == '__main__':
+    print(time_now_string())
+    
