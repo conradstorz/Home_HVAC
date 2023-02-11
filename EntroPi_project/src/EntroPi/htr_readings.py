@@ -11,6 +11,7 @@ from CONSTANTS import TEMP_AND_HUMIDITY_FILE
 from CONSTANTS import MIN_WEATHER_URL_UPDATE_INTERVAL
 from CONSTANTS import DATE_FORMAT_AS_STRING
 from CONSTANTS import ZIPCODE
+from CONSTANTS import EXAMPLE_DICT
 from rotate_csv_and_compress import compress_local_csv
 from open_weather_map import get_local_conditions
 from w1thermDevices import get_current_temps
@@ -88,7 +89,19 @@ def update_temp_and_humidity():
             data["Temperature at device"], data["Humidity at device"] = get_humidity_reading()
 
             # TODO write to CSV, formatted same as any other device
-            
+            existing_records = retrieve_json(SENSOR_JSON_FILE) 
+            for k,v in data.items():
+                # make a freah copy of the deafults
+                examp = EXAMPLE_DICT['Device ID HEX value goes here'].copy()
+                # put this measurement into the dict
+                examp['device location'] = k
+                examp['most recent date accessed'] = data["Last weather update"]
+                examp['temperature'] = v
+                # call UPDATE function to track min/max values
+                # TODO expand UPDATE function to be more easily useful for cases like these
+                # examp = update(examp, existing_records[k])
+                # write to CSV
+                
             # TODO send_to_thingspeak(latest readings)
             
             # CSV files need to be compressed periodically
