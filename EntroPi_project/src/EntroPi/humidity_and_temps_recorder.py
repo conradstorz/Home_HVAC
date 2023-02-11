@@ -3,10 +3,8 @@ __version__ = "0.1"
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from datetime import datetime, timedelta, time, date
 from htr_readings import read_temperatures
 from LCD_statusd import start_LCD_daemon
-
 from loguru import logger
 import time
 from csv_functions import write_csv
