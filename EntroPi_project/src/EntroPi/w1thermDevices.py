@@ -85,12 +85,37 @@ def get_humidity_reading():
     pin = 25
     # Try to grab a sensor reading.  Use the read_retry method which will retry up
     # to 15 times to get a sensor reading (waiting 2 seconds between each retry).
+    # TODO add try/except
     humidity, celsius = Adafruit_DHT.read_retry(sensor, pin)
-    temperature = (celsius * 9/5) + 32
+    if celsius != None:
+        temperature = (celsius * 9/5) + 32
+    else:
+        temperature = None
     # Note that sometimes you won't get a reading and the results will be null (because Linux can't
     # guarantee the timing of calls to read the sensor). If this happens try again!
     return (temperature, humidity)
 
+
+def get_am2320_temp_and_humidity():
+    """
+    # SPDX-FileCopyrightText: 2021 ladyada for Adafruit Industries
+    # SPDX-License-Identifier: MIT
+
+    import time
+    import board
+    import adafruit_am2320
+
+    # create the I2C shared bus
+    i2c = board.I2C()  # uses board.SCL and board.SDA
+    # i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
+    am = adafruit_am2320.AM2320(i2c)
+
+    while True:
+        print("Temperature: ", am.temperature)
+        print("Humidity: ", am.relative_humidity)
+        time.sleep(2)
+        
+    """
 
 
 if __name__ == '__main__':
