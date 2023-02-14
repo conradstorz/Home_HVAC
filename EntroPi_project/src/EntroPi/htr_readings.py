@@ -87,7 +87,7 @@ def update_temp_and_humidity():
             
             # read local humidity device attached to the device this program is running on.
             data["Temperature at device"], data["Humidity at device"] = get_humidity_reading()
-
+            print(f'Humidity at device is: {data["Humidity at device"]}')
             # TODO write to CSV, formatted same as any other device
             existing_records = retrieve_json(SENSOR_JSON_FILE) 
             for k,v in data.items():
