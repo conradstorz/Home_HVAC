@@ -3,7 +3,7 @@ Description=3023 Old Hill Rd HVAC temperatures monitor
 After=network-online.target
 
 [Service] 
-ExecStart=/usr/bin/python3 -u humidity_and_temps_recorder.py
+ExecStart=/usr/bin/python3 -u EntroPi.py
 WorkingDirectory=/home/breakout
 StandardOutput=inherit
 StandardError=inherit
