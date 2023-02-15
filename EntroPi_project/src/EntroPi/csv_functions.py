@@ -18,8 +18,8 @@ def write_csv(device_data, directory="."):
         with todays date as part of the filename. Each day the old filename
         is abandoned and a new filename is started."""
     # Open the output CSV file and write 'the results
-    # print(f"\nBegin saving data...")
-    # print(f"\ndevice_data:\n{device_data}\n")
+    logger.debug(f"Begin saving data...")
+    logger.debug(f"device_data:{device_data}")
     if device_data != None:
         if device_data != {}:
             first_key = list(device_data)[0]
@@ -27,27 +27,27 @@ def write_csv(device_data, directory="."):
             first_device_values = device_data[first_key]
             # retrieve keys from nested dictionaries
             fieldnames = (first_device_values.keys())  
-            # print(f"\nCSV file fieldnames:\n{fieldnames}\n")
+            logger.debug(f"CSV file fieldnames:{fieldnames}")
             out_csv = Path(generate_csv_filename(BASENAME_CSV_FILE))
-            # print(f'does CSV file exist: {out_csv.exists()}')
+            logger.debug(f'does CSV file exist: {out_csv.exists()}')
             # check if file exists and write headers if new file
             if not out_csv.exists():
-                print(f"\nCSV file does not exist. Creating...")
-                print(f"\CSV file fieldnames:\n{fieldnames}\n")
+                logger.info(f"CSV file does not exist. Creating...")
+                logger.info(f"CSV file fieldnames:{fieldnames}")
                 with open(out_csv, "w", newline="") as h:
                     writer = csv.DictWriter(h, fieldnames=fieldnames)
                     writer.writeheader()
-            # print(f'\nAppending file CSV data.')
+            logger.debug(f'Appending file CSV data.')
             with open(out_csv, "a", newline="") as h:
                 writer = csv.DictWriter(h, fieldnames=fieldnames)
                 # Write a row for each location
                 for device, values in device_data.items():
                     writer.writerow(values)
-            # print(f"\nOutput file saved as {out_csv.name}.")
+            logger.info(f"Output file saved as {out_csv.name}.")
         else:
             # TODO log error
-            print("Empty dict unexpected.")
+            logger.info("Empty dict unexpected.")
     else:
         # TODO log error
-        print("No data to add to CSV file.")
+        logger.info("No data to add to CSV file.")
     return

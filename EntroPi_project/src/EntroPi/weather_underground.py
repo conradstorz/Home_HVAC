@@ -42,7 +42,7 @@ if response.status_code == 200:
     data = response.json()
     # do something with data
 else:
-    print("Failed to retrieve data from API")
+    logger.info("Failed to retrieve data from API")
 
 
 Useful links:
@@ -50,8 +50,10 @@ Useful links:
 - Details of your plan https://openweathermap.org/price
 - Please, note that 16-days daily forecast and History API are not available for Free subscribers
 """
+from loguru import logger
 
 
+@logger.catch
 def get_temp_and_humidity(zipcode = None):
     """Retrieve current weather conditions in a JSON format and return a tuple of temp and humidity."""
     import requests
@@ -64,9 +66,9 @@ def get_temp_and_humidity(zipcode = None):
 
     if response.status_code == 200:
         data = response.json()
-        print(data)
+        logger.info(data)
     else:
-        print("Failed to retrieve data from API")
+        logger.info("Failed to retrieve data from API")
 
     """Contact weather underground and return a tuple of temperature for given zipcode and humidity."""
     temp = data['main']['temp']
@@ -75,4 +77,4 @@ def get_temp_and_humidity(zipcode = None):
 
 
 if __name__ == '__main__':
-    print(get_temp_and_humidity())
+    logger.info(get_temp_and_humidity())

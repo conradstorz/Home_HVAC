@@ -20,67 +20,67 @@ def zip_files(uncompressed_file_path, remove_uncompressed_file=False):
     with ZipFile(zipfile_path, "w") as target:
         # Add the file to the ZIP file
         target.write(uncompressed_file_path, compress_type=ZIP_DEFLATED)
-        print(
+        logger.info(
             f"{uncompressed_file_path} file has been compressed into {zipfile_path}"
         )  # TODO add details
         if remove_uncompressed_file:
             # TODO implement removal of uncompressed file
             if zipfile_path.exists():  # verify zip exists
-                print("zip file exists")
+                logger.info("zip file exists")
                 if target.testzip() == None:  # verify zip contains no invalid files
-                    print("zip file is valid")
-                    print(target.namelist())
+                    logger.info("zip file is valid")
+                    logger.info(target.namelist())
                     if (
                         uncompressed_file_path.name in target.namelist()
                     ):  # verify zip contains target file
-                        print("is inside zipfile")
+                        logger.info("is inside zipfile")
                         if (
                             uncompressed_file_path.is_file()
                         ):  # verify target file is a file
-                            print("is file")
+                            logger.info("is file")
                             if (
                                 uncompressed_file_path.stat().st_size > 0
                             ):  # verify target file is non-zero sized
-                                print("is non-zero")
+                                logger.info("is non-zero")
                                 uncompressed_file_path.unlink()  # unlink file to remove
                             else:
                                 # TODO log inability to remove file
-                                print(
-                                    f"\nUnable to remove un-compressed file: {uncompressed_file_path}"
+                                logger.info(
+                                    f"Unable to remove un-compressed file: {uncompressed_file_path}"
                                 )
             if uncompressed_file_path.exists():  # verify file no longer exists
                 # TODO log file exists when it shouldn't
-                print(f"\nFile removal failed: {uncompressed_file_path}")
+                logger.info(f"File removal failed: {uncompressed_file_path}")
             else:
                 # TODO log success
-                print(f'\nFile "{uncompressed_file_path}" sucessfully removed.')
+                logger.info(f'File "{uncompressed_file_path}" sucessfully removed.')
         else:
-            # print(f"\nUn-compressed file '{uncompressed_file_path.name}' not removed per design.")
+            logger.debug(f"Un-compressed file '{uncompressed_file_path.name}' not removed per design.")
             pass
     return
 
 
 @logger.catch
 def compress_local_csv(directory=None):
-    # print("Start compress function.")
+    logger.debug("Start compress function.")
     if directory == None:
         directory = "./"
     # Search for CSV files in the directory
     active_recorder_file = generate_csv_filename(basename=BASENAME_CSV_FILE)
     # csv_files_in_local_directory = Path(directory).glob("*.csv")
     csv_files_found = list(Path(directory).glob("*.csv"))
-    # print(f"\nfiles found matching compression filter: {csv_files_found}")
-    # print(f"\nLength of list: {len(csv_files_found)}")
+    logger.debug(f"files found matching compression filter: {csv_files_found}")
+    logger.debug(f"Length of list: {len(csv_files_found)}")
     if len(csv_files_found) >= 1:
-        # print("loop over files")
+        logger.debug("loop over files")
         for file_path in csv_files_found:
-            # print(f"\nfile: {file_path.name}")
+            logger.debug(f"file: {file_path.name}")
             # TODO sort out active files (e.g. yesterday and todays file) and only compress older files
-            # print(f"\n{file_path.name} *** {active_recorder_file}")
+            logger.debug(f"{file_path.name} *** {active_recorder_file}")
             if file_path.name != active_recorder_file:
                 zip_files(file_path, remove_uncompressed_file=True)
             else:
-                # print(f"\nSkipping: {active_recorder_file} as per design.")
+                logger.debug(f"Skipping: {active_recorder_file} as per design.")
                 pass
 
 
@@ -110,6 +110,6 @@ def get_files_before_today(directory):
 directory = 'path/to/directory'
 files_before_today = get_files_before_today(directory)
 for file in files_before_today:
-    print(file)
+    logger.info(file)
 
 """

@@ -45,7 +45,7 @@ def retrieve_json(file_name):
         with open(file_name, "r") as f:
             data = json.load(f)
     except (FileNotFoundError, JSONDecodeError) as error:
-        # TODO log this error: print(f"Error with JSON file: {error}")
+        # TODO log this error: logger.info(f"Error with JSON file: {error}")
         data = {}
     return data
 
@@ -62,5 +62,5 @@ def write_json(file_name, data_dict):
 
 
 if __name__ == '__main__':
-    print(time_now_string())
+    logger.info(time_now_string())
     

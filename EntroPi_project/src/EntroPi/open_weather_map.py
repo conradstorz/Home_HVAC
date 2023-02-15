@@ -23,12 +23,12 @@ def get_local_conditions(zipcode=None):
         temp = data['main']['temp']
         humid = data['main']['humidity']
     else:
-        print("Failed to retrieve data from API")    
-        print(url)
+        logger.info("Failed to retrieve data from API")    
+        logger.info(url)
 
     return (temp, humid)
 
 
 if __name__ == '__main__':
-    print(get_local_conditions())
+    logger.info(get_local_conditions())
     

@@ -64,7 +64,7 @@ def handle_click(sender):
               }
      }
     """
-    print(f"\n{sender}\n")
+    logger.info(f"\n{sender}\n")
     # TODO log sender value
     if sender["type"] == "cellClicked":
         # offer user option to edit value of field

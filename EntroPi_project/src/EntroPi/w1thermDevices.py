@@ -23,7 +23,7 @@ def get_current_temps(sensor_dict):
             temperature_in_F = round(temperature_in_F, 1)
         except (errors.SensorNotReadyError, errors.ResetValueError) as error:
             # TODO log error
-            print(f'Error reading sensor: {deviceID} with error: {error}')
+            logger.info(f'Error reading sensor: {deviceID} with error: {error}')
             temperature_in_F = None
         results[deviceID]["temperature"] = temperature_in_F
         results[deviceID]["most recent date accessed"] = time_now_string()
@@ -46,7 +46,7 @@ def build_sensor_dict(sensors_list):
                 results[sensor.id]["device type"] = sensor.type
     else:
         # TODO log error
-        print(f'Sensor list is None.')
+        logger.info(f'Sensor list is None.')
     return results
 
 
@@ -60,7 +60,7 @@ def get_active_sensor_list():
         sensor = W1ThermSensor()
     except errors.NoSensorFoundError as error:
         # TODO log error
-        print("No sensors found {error}")
+        logger.info("No sensors found {error}")
         sensor = None
 
     available_sensors = []
@@ -68,10 +68,10 @@ def get_active_sensor_list():
         available_sensors = sensor.get_available_sensors()
         if available_sensors == None:
             # TODO log error getting sensors
-            print("no sensors reporting")
+            logger.info("no sensors reporting")
     else:
         # TODO log no sensor object available
-        print(f'No sensor object available')
+        logger.info(f'No sensor object available')
     # TODO log function end
     return available_sensors
 
@@ -111,8 +111,8 @@ def get_am2320_temp_and_humidity():
     am = adafruit_am2320.AM2320(i2c)
 
     while True:
-        print("Temperature: ", am.temperature)
-        print("Humidity: ", am.relative_humidity)
+        logger.info("Temperature: ", am.temperature)
+        logger.info("Humidity: ", am.relative_humidity)
         time.sleep(2)
         
     """
@@ -120,10 +120,10 @@ def get_am2320_temp_and_humidity():
 
 if __name__ == '__main__':
     local_temp_and_humid = get_humidity_reading()
-    print(f'{local_temp_and_humid=}')
+    logger.info(f'{local_temp_and_humid=}')
     sensors = get_active_sensor_list()
-    print(f'{len(sensors)} sensors reporting.')
+    logger.info(f'{len(sensors)} sensors reporting.')
     sensors_dict = build_sensor_dict(sensors)
-    print(f'{len(sensors)} items in sensor dict.')
+    logger.info(f'{len(sensors)} items in sensor dict.')
     current_temps = get_current_temps(sensors_dict)
-    print(f'{current_temps=}')
+    logger.info(f'{current_temps=}')

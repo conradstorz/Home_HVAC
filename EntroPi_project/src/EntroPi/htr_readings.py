@@ -46,11 +46,11 @@ def read_temperatures():
         updated_dict = update_device_definitions(current_sensor_data_dict)
         # update readings and add missing devices
         combined_data = update_minmax_records(existing_device_records, updated_dict)
-        # print(f'{combined_data=}')
+        logger.debug(f'{combined_data=}')
         write_json(SENSOR_JSON_FILE, combined_data)
     else:
         # TODO log error getting sensors
-        print("no sensors reporting")
+        logger.info("no sensors reporting")
         combined_data = {}
     return combined_data
 
@@ -80,14 +80,14 @@ def update_temp_and_humidity():
             
             # update the local weather conditions, get current temp and humidity
             outside_temperature, outside_humidity = get_local_conditions(zipcode=ZIPCODE)
-            print(f'Outdoor temp is: {outside_temperature}')
-            print(f'Outdoor humidity is: {outside_humidity}')
+            logger.info(f'Outdoor temp is: {outside_temperature}')
+            logger.info(f'Outdoor humidity is: {outside_humidity}')
             data["Last outside temperature"] = outside_temperature
             data["Last outdoor humidity"] = outside_humidity
             
             # read local humidity device attached to the device this program is running on.
             data["Temperature at device"], data["Humidity at device"] = get_humidity_reading()
-            print(f'Humidity at device is: {data["Humidity at device"]}')
+            logger.info(f'Humidity at device is: {data["Humidity at device"]}')
             # TODO write to CSV, formatted same as any other device
             existing_records = retrieve_json(SENSOR_JSON_FILE) 
             for k,v in data.items():
@@ -123,7 +123,7 @@ def compare_device_readings(old_reading, new_reading):
     output = {}
     if new_reading["temperature"] == None:
         # TODO log error that device did not contain valid info
-        print('error')
+        logger.info('Error. Device response was invalid.')
     else:       
         # TODO log beginning of device value comparrison
         for description, observed_value in new_reading.items():
@@ -133,7 +133,7 @@ def compare_device_readings(old_reading, new_reading):
             else:
                 if description not in old_reading:
                     # TODO log addition of new monitoring value
-                    print(f'{description} was not previously monitored.')
+                    logger.info(f'{description} was not previously monitored.')
                 else:
                     # check for new highest reading
                     if description == "highest value":
@@ -143,7 +143,7 @@ def compare_device_readings(old_reading, new_reading):
                             # TODO log change in highest value
                             output["highest value"] = new_reading["temperature"]
                             output["highest date"] = new_reading["most recent date accessed"]
-                            print(f'{new_reading["device location"]} {old_reading["highest value"]} New highest reading recorded. {new_reading["temperature"]}')
+                            logger.info(f'{new_reading["device location"]} {old_reading["highest value"]} New highest reading recorded. {new_reading["temperature"]}')
                         else:
                             # retain the old reading
                             output["highest value"] = old_reading["highest value"]
@@ -156,7 +156,7 @@ def compare_device_readings(old_reading, new_reading):
                             # TODO log change in lowest value
                             output["lowest value"] = new_reading["temperature"]
                             output["lowest date"] = new_reading["most recent date accessed"]
-                            print(f'{new_reading["device location"]} {old_reading["lowest value"]} New lowest reading recorded. {new_reading["temperature"]}')
+                            logger.info(f'{new_reading["device location"]} {old_reading["lowest value"]} New lowest reading recorded. {new_reading["temperature"]}')
                         else:
                             # retain the old reading
                             output["lowest value"] = old_reading["lowest value"]
@@ -174,7 +174,7 @@ def update_minmax_records(old_readings_from_devices, new_readings_from_devices):
     output = {}
     if new_readings_from_devices == None:
         # TODO log error
-        print("error")
+        logger.info("error")
     else:
         for new_device_ID, new_device_observations in new_readings_from_devices.items():
             # TODO log beginning of updating of device
@@ -194,21 +194,21 @@ def update_device_definitions(reported_devices_dict):
     User of the system may choose to make changes to the JSON file from the system commandline or other access.
     These changes are normally just to update the description of what is being monitored by each device.
     """
-    # print(f"\nBegin updating device location names if needed.")
+    logger.debug(f"Begin updating device location names if needed.")
     output = {}
     # load sensor definitions file
     definitions = retrieve_json(SENSOR_DEFINITIONS)
     # load the existing sensors file
     existing = retrieve_json(SENSOR_JSON_FILE)
     # loop over reported devices looking for matching device IDs
-    # print(f'Comparing reporting devices to definitions file looking for changes.')
+    logger.debug(f'Comparing reporting devices to definitions file looking for changes.')
     for deviceID, details in reported_devices_dict.items():
-        # print(f'\n{reported_devices_dict[deviceID]=}')
+        logger.debug(f'{reported_devices_dict[deviceID]=}')
         output[deviceID] = details
         # check for device updates from user.
         if deviceID not in definitions.keys():
-            print(f"Key not found in location definitions file. {deviceID=}")
-            print(f"Nothing to do for this device.")
+            logger.info(f"Key not found in location definitions file. {deviceID=}")
+            logger.info(f"Nothing to do for this device.")
         else:
             # check to see if deivce was previously identified.
             if deviceID in existing.keys():
@@ -218,20 +218,20 @@ def update_device_definitions(reported_devices_dict):
                     # update description of device location
                     output[deviceID]["device location"] = definitions[deviceID]["device location"]
                     output[deviceID]["accuracy value"] = definitions[deviceID]["accuracy value"]
-                    print(f'{deviceID=} updated name to: {definitions[deviceID]["device location"]} :::from::: {old_location}')
+                    logger.info(f'{deviceID=} updated name to: {definitions[deviceID]["device location"]} :::from::: {old_location}')
     write_json(SENSOR_JSON_FILE, output)
-    print(f"\nEnd device update")
+    logger.info(f"End device updating")
     return output
 
 
 @logger.catch
 def main():
     responding = read_temperatures()
-    print(f"\n\nOnly devices responding:\n{responding.keys()}")
+    logger.info(f"Only devices responding:{responding.keys()}")
     for k,v in responding.items():
-        print(k)
+        logger.info(k)
         for i in v.items():
-            print(f'{i}')
+            logger.info(f'{i}')
 
 if __name__ == "__main__":
     main()

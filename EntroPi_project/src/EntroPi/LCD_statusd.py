@@ -43,7 +43,7 @@ def start_LCD_daemon():
     """Periodically update attached LCD with details of running program.
     This code exits quickly but could be long running if it is compatible
     with some type of hypervisor multitasking scheme."""
-    print("Start LCD update.")
+    logger.info("Start LCD update.")
     lcd.clear()
     # Set LCD color to red
     lcd.color = RED_BACKLIGHT
@@ -54,7 +54,7 @@ def start_LCD_daemon():
     lcd.message = "IP Address\nUNKNOWN"
     ips2 = check_output(["hostname", "--all-ip-addresses"]).decode("utf-8").split()
     # TODO check that IP address is valid
-    print(f"IP address lookup: {ips2}")
+    logger.info(f"IP address lookup: {ips2}")
     lcd.clear()
     # Set LCD color to red
     lcd.color = GREEN_BACKLIGHT
