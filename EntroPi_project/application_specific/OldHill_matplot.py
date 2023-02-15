@@ -14,7 +14,7 @@ def get_CSV_data():
     # TODO make compat with zipped csv
     # TODO make interactive to choose from several
     # TODO make to choose most recent from directory automatically    
-    with open("20230213_HVAC_temps.csv", "r") as f:
+    with open("20230214_HVAC_temps.csv", "r") as f:
         reader = csv.DictReader(f)
         # Iterate through the rows of the CSV file
         for row in reader:
