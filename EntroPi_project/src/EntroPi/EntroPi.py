@@ -62,6 +62,8 @@ def defineLoggers(filename):
         encoding="utf8",
     )
     # create a new log file for each run of the program
+    #
+    # TODO set a compression rule for older log files
     return
 
 

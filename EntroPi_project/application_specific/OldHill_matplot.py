@@ -14,7 +14,7 @@ def get_CSV_data():
     # TODO make compat with zipped csv
     # TODO make interactive to choose from several
     # TODO make to choose most recent from directory automatically    
-    with open("20230214_HVAC_temps.csv", "r") as f:
+    with open("20230216_HVAC_temps.csv", "r") as f:
         reader = csv.DictReader(f)
         # Iterate through the rows of the CSV file
         for row in reader:
@@ -58,7 +58,7 @@ def main():
     # df = df.fillna(df.avg())
     df = df.interpolate()
     # df = df.rolling(window=3, min_periods=1).mean()
-    # df['Temp'] = df['Temp'].interpolate(method='polynomial', order=2)
+    # df = df.interpolate(method='polynomial', order=2)
     print(df)
 
     ax = df.plot.line()

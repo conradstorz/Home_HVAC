@@ -24,7 +24,6 @@ def zip_files(uncompressed_file_path, remove_uncompressed_file=False):
             f"{uncompressed_file_path} file has been compressed into {zipfile_path}"
         )  # TODO add details
         if remove_uncompressed_file:
-            # TODO implement removal of uncompressed file
             if zipfile_path.exists():  # verify zip exists
                 logger.info("zip file exists")
                 if target.testzip() == None:  # verify zip contains no invalid files
