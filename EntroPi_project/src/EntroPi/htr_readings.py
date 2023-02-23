@@ -29,11 +29,13 @@ def read_temperatures():
     # recover json file of sensors
     existing_device_records = retrieve_json(SENSOR_JSON_FILE)    
     # get local conditions
-    local_data = {}
     local_data = update_temp_and_humidity()
     # get inside humidity
-    inside_humidity = 0
-    local_data['inside humidity'] = inside_humidity      
+    if local_data != None:
+        inside_humidity = 0
+        local_data['inside humidity'] = inside_humidity      
+    else:
+        local_data['inside humidity'] = None
 
     available_sensors = get_active_sensor_list()
 
@@ -80,7 +82,12 @@ def update_temp_and_humidity():
             data["Last weather update"] = current_time.strftime(DATE_FORMAT_AS_STRING)            
             
             # update the local weather conditions, get current temp and humidity
-            outside_temperature, outside_humidity = get_local_conditions(zipcode=ZIPCODE)
+            conditions = get_local_conditions(zipcode=ZIPCODE)
+            if conditions != None:
+                outside_temperature, outside_humidity = conditions
+            else:
+                outside_humidity = None
+                outside_temperature = None
             logger.info(f'Outdoor temp is: {outside_temperature}')
             logger.info(f'Outdoor humidity is: {outside_humidity}')
             data["Last outside temperature"] = outside_temperature

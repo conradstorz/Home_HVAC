@@ -12,14 +12,15 @@ def get_local_conditions(zipcode=None):
     lat = '38.317139'
     lon = '-85.868167'
 
+    temp = None
+    humid = None    
+
     url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={api_key}"
     try:
         response = requests.get(url)
     except requests.exceptions.RequestException as err:
         logger.error("Exception from request library.")    
         logger.error(err)     
-        temp = None
-        humid = None
     
     if response == None:
         logger.error("Failed to get a response from request library.")    

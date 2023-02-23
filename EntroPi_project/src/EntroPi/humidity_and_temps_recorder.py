@@ -31,7 +31,7 @@ def main():
     logger.info("Start main recorder.")
     sensors_reporting = read_temperatures()
     logger.debug(f"sensors reporting:{sensors_reporting}")
-    if sensors_reporting == []:
+    if (sensors_reporting == []) or (sensors_reporting == None):
         # TODO log error
         logger.info("no sensors error")
     else:
