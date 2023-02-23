@@ -15,8 +15,11 @@ from CONSTANTS import *
 def main_data_gathering_loop():
     while True:
         sensors_reporting = read_temperatures()
-        logger.info(f"Updating readings of {len(sensors_reporting)} sensors...")
-        write_csv(sensors_reporting)        
+        if sensors_reporting != None:
+            logger.info(f"Updating readings of {len(sensors_reporting)} sensors...")
+            write_csv(sensors_reporting)        
+        else:
+            logger.error(f'Nonetype returned from "Read_temperatures" function.')
         logger.debug("Sleeping 1 second...")
         time.sleep(1)
     return

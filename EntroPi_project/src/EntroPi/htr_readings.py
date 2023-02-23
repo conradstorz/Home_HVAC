@@ -29,6 +29,7 @@ def read_temperatures():
     # recover json file of sensors
     existing_device_records = retrieve_json(SENSOR_JSON_FILE)    
     # get local conditions
+    local_data = {}
     local_data = update_temp_and_humidity()
     # get inside humidity
     inside_humidity = 0

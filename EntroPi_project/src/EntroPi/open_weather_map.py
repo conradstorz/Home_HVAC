@@ -13,18 +13,26 @@ def get_local_conditions(zipcode=None):
     lon = '-85.868167'
 
     url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={api_key}"
-    response = requests.get(url)
-
-    temp = None
-    humid = None
+    try:
+        response = requests.get(url)
+    except requests.exceptions.RequestException as err:
+        logger.error("Exception from request library.")    
+        logger.error(err)     
+        temp = None
+        humid = None
+    
+    if response == None:
+        logger.error("Failed to get a response from request library.")    
+        logger.error(url)        
+        return (temp, humid)
     
     if response.status_code == 200:
         data = response.json()
         temp = data['main']['temp']
         humid = data['main']['humidity']
     else:
-        logger.info("Failed to retrieve data from API")    
-        logger.info(url)
+        logger.error("Failed to retrieve data from API")    
+        logger.error(url)
 
     return (temp, humid)
 
