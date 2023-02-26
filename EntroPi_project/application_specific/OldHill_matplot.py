@@ -14,17 +14,20 @@ def get_CSV_data():
     # TODO make compat with zipped csv
     # TODO make interactive to choose from several
     # TODO make to choose most recent from directory automatically    
-    with open("20230218_HVAC_temps.csv", "r") as f:
-        reader = csv.DictReader(f)
-        # Iterate through the rows of the CSV file
-        for row in reader:
-            device = row["device location"]
-            observation = (row["temperature"], row["most recent date accessed"])
-            # TODO allow specification of minimum/maximum sample rate by discarding extra samples
-            if device in readings_by_location.keys():
-                readings_by_location[device] = readings_by_location[device] + [observation]
-            else:
-                readings_by_location[device] = [observation]
+    try:
+        with open("20230225_HVAC_temps.csv", "r") as f:
+            reader = csv.DictReader(f)
+            # Iterate through the rows of the CSV file
+            for row in reader:
+                device = row["device location"]
+                observation = (row["temperature"], row["most recent date accessed"])
+                # TODO allow specification of minimum/maximum sample rate by discarding extra samples
+                if device in readings_by_location.keys():
+                    readings_by_location[device] = readings_by_location[device] + [observation]
+                else:
+                    readings_by_location[device] = [observation]
+    except FileNotFoundError as err:
+        return None            
     return readings_by_location
 
 
@@ -46,7 +49,10 @@ def send_data_to_csv(data):
 def main():
     # access the data
     readings = get_CSV_data()
-
+    if readings == None:
+        logger.info(f'No input found.')
+        return
+    
     # send the dict data to a new CSV
     outputfile = send_data_to_csv(readings)
     print(f"Output file saved as {outputfile}.")
