@@ -99,9 +99,10 @@ rotator = Rotator(size=5e8, at=dt.time(0, 0, 0))
 
     logger.add(
         "".join(["./LOGS/", filename, "_{time}.log"]),
-        rotation=rotator.should_rotate,
+        rotation="12:00",
         level="DEBUG",
         encoding="utf8",
+        compression="zip",
     )
     # create a new log file for each run of the program
     #

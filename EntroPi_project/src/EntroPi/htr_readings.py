@@ -12,7 +12,7 @@ from CONSTANTS import MIN_WEATHER_URL_UPDATE_INTERVAL
 from CONSTANTS import DATE_FORMAT_AS_STRING
 from CONSTANTS import ZIPCODE
 from CONSTANTS import EXAMPLE_DICT
-from rotate_csv_and_compress import compress_local_csv
+from csv_functions import compress_local_csv
 from open_weather_map import get_local_conditions
 from w1thermDevices import get_current_temps
 from w1thermDevices import build_sensor_dict
