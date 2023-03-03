@@ -1,3 +1,4 @@
+import csv
 from pathlib import Path
 from zipfile import ZipFile, ZIP_DEFLATED
 from loguru import logger
@@ -9,7 +10,7 @@ from CONSTANTS import *
 def generate_csv_filename(basename=None):
     if basename == None:
         basename = BASENAME_CSV_FILE
-    return f'{datetime.now().strftime("%Y%m%d")}{basename}.csv'
+    return f'CSV/{datetime.now().strftime("%Y%m%d")}{basename}.csv'
 
 
 @logger.catch
@@ -33,6 +34,8 @@ def write_csv(device_data, directory="."):
             # check if file exists and write headers if new file
             if not out_csv.exists():
                 logger.info(f"CSV file does not exist. Creating...")
+                out_csv.parent.mkdir(parents=True, exist_ok=True)
+                out_csv.touch()
                 logger.info(f"CSV file fieldnames:{fieldnames}")
                 with open(out_csv, "w", newline="") as h:
                     writer = csv.DictWriter(h, fieldnames=fieldnames)
