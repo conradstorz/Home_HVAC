@@ -12,6 +12,7 @@ from CONSTANTS import MIN_WEATHER_URL_UPDATE_INTERVAL
 from CONSTANTS import DATE_FORMAT_AS_STRING
 from CONSTANTS import ZIPCODE
 from CONSTANTS import EXAMPLE_DICT
+from CONSTANTS import CSV_FILE_BASE_DIR
 from csv_functions import compress_local_csv
 from open_weather_map import get_local_conditions
 from w1thermDevices import get_current_temps
@@ -113,7 +114,7 @@ def update_temp_and_humidity():
             # TODO send_to_thingspeak(latest readings)
             
             # CSV files need to be compressed periodically
-            compress_local_csv()
+            compress_local_csv(CSV_FILE_BASE_DIR)
         else:
             last_update = current_time - MIN_WEATHER_URL_UPDATE_INTERVAL
     write_json(TEMP_AND_HUMIDITY_FILE, data)

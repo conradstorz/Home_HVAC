@@ -7,10 +7,12 @@ from CONSTANTS import *
 
 
 @logger.catch
-def generate_csv_filename(basename=None):
+def generate_csv_filename(basename=None, basedir = None):
     if basename == None:
         basename = BASENAME_CSV_FILE
-    return f'CSV/{datetime.now().strftime("%Y%m%d")}{basename}.csv'
+    if basedir == None:
+        basedir = CSV_FILE_BASE_DIR
+    return f'{basedir}{datetime.now().strftime("%Y%m%d")}{basename}.csv'
 
 
 @logger.catch
@@ -128,7 +130,7 @@ def compress_local_csv(directory=None):
 
 
 if __name__ == "__main__":
-    compress_local_csv()
+    compress_local_csv(CSV_FILE_BASE_DIR)
 
 
 """
