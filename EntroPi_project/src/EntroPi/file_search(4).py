@@ -6,6 +6,7 @@
 
 import io
 import os
+import csv
 from tempfile import NamedTemporaryFile
 import zipfile
 from pathlib import Path
@@ -61,11 +62,11 @@ def select_csv_file():
     if "!" in filename:
         zip_file, csv_file = filename.split("!")
         with zipfile.ZipFile(zip_file, 'r') as zip:
-            with zip.open(csv_file) as csv:
-                temp_file = io.StringIO(csv.read().decode())
+            with zip.open(csv_file) as csvfile:
+                temp_file = io.StringIO(csvfile.read().decode())
     else:
-        with open(filename, 'r') as csv:
-            temp_file = io.StringIO(csv.read())
+        with open(filename, 'r') as csvfile:
+            temp_file = io.StringIO(csvfile.read())
     logger.debug(f'{temp_file=}')
     # Attempt to parse the CSV data to ensure it is valid
     try:
@@ -140,5 +141,5 @@ def write_to_temp_file(data):
 
 
 if __name__ == '__main__':
-    select_csv_file()
+    print(f'File saved as: {select_csv_file()}')
     
