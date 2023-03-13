@@ -13,7 +13,8 @@ def get_local_conditions(zipcode=None):
     lon = '-85.868167'
 
     temp = None
-    humid = None    
+    humid = None   
+    response = None 
 
     url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={api_key}"
     try:

@@ -63,6 +63,7 @@ def zip_files(uncompressed_file_path, remove_uncompressed_file=False):
     # Initialize the ZIP file
     # TODO verify file exists and is non-zero sized
     zipfile_path = uncompressed_file_path.with_suffix(".zip")
+    # TODO line below throws errors and needs to be try/excepted
     with ZipFile(zipfile_path, "w") as target:
         # Add the file to the ZIP file
         target.write(uncompressed_file_path, compress_type=ZIP_DEFLATED)
