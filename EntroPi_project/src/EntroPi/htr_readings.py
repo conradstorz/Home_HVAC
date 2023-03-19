@@ -23,14 +23,14 @@ from w1thermDevices import get_humidity_reading
 
 
 @logger.catch
-def read_temperatures():
+def read_temperatures(ENV_VARS):
     """Read temp and humidity sensing devices, local outside weather conditions and then update 
         readings into permanent device status file (JSON)"""
     # TODO log start of program
     # recover json file of sensors
     existing_device_records = retrieve_json(SENSOR_JSON_FILE)    
     # get local conditions
-    local_data = update_temp_and_humidity()
+    local_data = update_temp_and_humidity(ENV_VARS)
     # get inside humidity
     if local_data != None:
         inside_humidity = 0
@@ -60,7 +60,7 @@ def read_temperatures():
 
 
 @logger.catch
-def update_temp_and_humidity():
+def update_temp_and_humidity(ENV_VARS):
     """Check time delay and get download from OpenWeather.com if time is right."""
     data = retrieve_json(TEMP_AND_HUMIDITY_FILE)
     # see if it is time to update the local weather conditions
@@ -83,7 +83,7 @@ def update_temp_and_humidity():
             data["Last weather update"] = current_time.strftime(DATE_FORMAT_AS_STRING)            
             
             # update the local weather conditions, get current temp and humidity
-            conditions = get_local_conditions(zipcode=ZIPCODE)
+            conditions = get_local_conditions(ENV_VARS, zipcode=ZIPCODE)
             if conditions != None:
                 outside_temperature, outside_humidity = conditions
             else:
@@ -114,6 +114,7 @@ def update_temp_and_humidity():
             # TODO send_to_thingspeak(latest readings)
             
             # CSV files need to be compressed periodically
+            logger.info(f'Check for old csv files to compress.')
             compress_local_csv(CSV_FILE_BASE_DIR)
         else:
             last_update = current_time - MIN_WEATHER_URL_UPDATE_INTERVAL

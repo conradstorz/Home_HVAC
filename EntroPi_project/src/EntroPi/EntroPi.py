@@ -10,6 +10,7 @@ RUNTIME_CWD = Path.cwd()
 OS_FILENAME_SAFE_TIMESTR = "".join(i for i in TIME_NOW if i not in "\/:*?<>|")
 import datetime as dt
 import os
+from environment_vars import retrieve_env_vars
 
 
 from humidity_and_temps_recorder import main
@@ -44,5 +45,6 @@ def defineLoggers(filename):
 
 defineLoggers(f"{RUNTIME_NAME}_{OS_FILENAME_SAFE_TIMESTR}")
 logger.info("Program Start.")  # log the start of the program
-main()
+USER_ENV_VARS = retrieve_env_vars()
+main(USER_ENV_VARS)
 logger.info("Program End.")

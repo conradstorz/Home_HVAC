@@ -5,10 +5,15 @@ import os
 import requests
 
 @logger.catch
-def get_local_conditions(zipcode=None):
+def get_local_conditions(ENV_VARS, zipcode=None):
     """Contact weather underground and return a tuple of temperature for given zipcode and humidity."""
 
-    api_key = os.environ.get('OPEN_WEATHER_API')
+    # api_key = os.environ.get('OPEN_WEATHER_API')
+    # line above won't work when this script is run from a service
+    api_key = ENV_VARS['OPEN_WEATHER_API']
+    logger.debug(f'{api_key=}')
+
+    # TODO set these values from a ZipCode lookup
     lat = '38.317139'
     lon = '-85.868167'
 
