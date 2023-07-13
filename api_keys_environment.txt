@@ -8,11 +8,11 @@ If the file does not exist, create it.
 
 Add the environment variable: Add the following line to the file, 
 replacing MY_API_KEY with the name of your environment variable 
-and 123456789 with its value:
+and 'a secret' with its value:
 
 javascript
 Copy code
-export MY_API_KEY=123456789
+export MY_API_KEY='a secret'
 Save and close the file: Save the changes to the ~/.bashrc file 
 and close the text editor.
 
