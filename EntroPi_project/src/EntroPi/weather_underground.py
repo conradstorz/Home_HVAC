@@ -11,7 +11,7 @@ API key:
 Endpoint:
 - Please, use the endpoint api.openweathermap.org for your API calls
 - Example of API call:
-api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=5a51770d8fa87227c5c1a07f3f9240fd
+api.openweathermap.org/data/2.5/weather?q=London,uk&APPID='a secret'
 
 lat = '38.317139'
 lon = '-85.868167'
