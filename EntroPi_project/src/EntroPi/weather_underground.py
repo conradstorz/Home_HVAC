@@ -3,7 +3,7 @@ TODO note that once per 12 minutes is probably frequent enough to check temps an
 Thank you for subscribing to Free OpenWeatherMap!
 
 API key:
-- Your API key is 5a51770d8fa87227c5c1a07f3f9240fd
+- Your API key is: DUH! it's a secret
 - Within the next couple of hours, it will be activated and ready to use
 - You can later create more API keys on your account page
 - Please, always use your API key in each API call
@@ -15,7 +15,7 @@ api.openweathermap.org/data/2.5/weather?q=London,uk&APPID=5a51770d8fa87227c5c1a0
 
 lat = '38.317139'
 lon = '-85.868167'
-API = '5a51770d8fa87227c5c1a07f3f9240fd'
+API = 'DONT PUT IT HERE'
 url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={API}"
 
 SAMPLE RETURN:
@@ -60,7 +60,7 @@ def get_temp_and_humidity(zipcode = None):
 
     lat = '38.317139'
     lon = '-85.868167'
-    API = '5a51770d8fa87227c5c1a07f3f9240fd'
+    API = 'DONT PUT IT HERE IN UPLOADS TO GITHUB'
     url = f"https://api.openweathermap.org/data/2.5/weather?units=imperial&lat={lat}&lon={lon}&appid={API}"
     response = requests.get(url)
 
